@@ -89,6 +89,7 @@ code{background:var(--inp);padding:1px 5px;border-radius:5px;font-size:12px}
 <ol>
 <li>สร้าง repo ใหม่บน GitHub (Private ก็ได้)</li>
 <li><b>Add file → Create new file</b> ตั้งชื่อ <code>.github/workflows/build-apk.yml</code> → วาง Workflow (ปุ่มด้านล่าง) → Commit</li>
+<li>(ทางเลือก) Secret <code>KEYSTORE_B64</code> = base64 ของ keystore ถ้าอยากอัปเดตแอปทับของเดิมได้ ไม่ต้องถอนก่อน</li>
 <li>ถ้าใช้ Gemini: Settings → Secrets and variables → Actions → เพิ่ม <code>GEMINI_API_KEY</code></li>
 <li><b>Add file → Upload files</b> → เลือก <b>ไฟล์ ZIP ต้นฉบับ</b> ไฟล์เดียว (ไม่ต้องแตก) → Commit ระบบจะ build อัตโนมัติ</li>
 <li>แท็บ <b>Actions</b> → รอ ~5–10 นาที → เปิด run ล่าสุด → โหลด <code>app-debug-apk</code> ที่ Artifacts → ติดตั้งบน Xiaomi</li>
@@ -181,13 +182,22 @@ function gradleWf(){
   '          if [ -z "$F" ]; then echo "::error::settings.gradle not found. Upload the project zip to the repo root."; ls -la; exit 1; fi',
   '          echo "P=$(dirname "$F")" >> "$GITHUB_ENV"; echo "Project dir: $(dirname "$F")"',
   '      - name: Accept SDK licenses','        run: |','          yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses > /dev/null || true',
+  '      - name: Install SDK platform','        run: |',
+  '          cd "$P"',
+  '          V=$(grep -hoE "release\\(([0-9]+)\\)" app/build.gradle* | grep -oE "[0-9]+" | head -n 1)',
+  '          M=$(grep -hoE "minorApiLevel = [0-9]+" app/build.gradle* | grep -oE "[0-9]+$" | head -n 1)',
+  '          SM="$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager"',
+  '          if [ -n "$V" ]; then if [ -n "$M" ] && [ "$M" != "0" ]; then "$SM" "platforms;android-$V.$M" || true; fi; "$SM" "platforms;android-$V" || true; fi',
   '      - name: Prepare','        run: |','          cd "$P"',
+  '          if [ -n "$KEYSTORE_B64" ]; then echo "$KEYSTORE_B64" | base64 -d > debug.keystore; fi',
   '          [ -f debug.keystore ] || keytool -genkeypair -keystore debug.keystore -storepass android -alias androiddebugkey -keypass android -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=Android Debug,O=Android,C=US"',
   "          sed -i -E 's/versionCode = [0-9]+/versionCode = "+vc+"/; s/versionName = \".*\"/versionName = \""+vn+"\"/; s/applicationId = \".*\"/applicationId = \""+id+"\"/' app/build.gradle.kts"];
-  if(g)L.push('          if [ -n "$GEMINI_API_KEY" ]; then echo "GEMINI_API_KEY=$GEMINI_API_KEY" > .env; fi','        env:','          GEMINI_API_KEY: '+S);
+  if(g)L.push('          if [ -n "$GEMINI_API_KEY" ]; then echo "GEMINI_API_KEY=$GEMINI_API_KEY" > .env; fi','        env:','          GEMINI_API_KEY: '+S,'          KEYSTORE_B64: ${{ secrets.KEYSTORE_B64 }}');
+  else L.push('        env:','          KEYSTORE_B64: ${{ secrets.KEYSTORE_B64 }}');
   L.push('      - name: Build debug APK','        run: |','          cd "$P"',
   '          if [ -f gradlew ] && [ -f gradle/wrapper/gradle-wrapper.jar ]; then chmod +x gradlew; ./gradlew assembleDebug --no-daemon --stacktrace; else gradle assembleDebug --no-daemon --stacktrace; fi',
-  '      - uses: actions/upload-artifact@v4','        with:','          name: app-debug-apk','          path: "**/build/outputs/apk/debug/*.apk"');
+  '      - uses: actions/upload-artifact@v4','        with:','          name: app-debug-apk','          path: "**/build/outputs/apk/debug/*.apk"',
+  '      - uses: actions/upload-artifact@v4','        if: failure()','        with:','          name: build-reports','          path: "**/build/reports/**"','          if-no-files-found: ignore');
   return L.join('\n')+'\n';
 }
 function workflow(){

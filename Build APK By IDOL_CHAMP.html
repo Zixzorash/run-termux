@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Build APK By IDOL_CHAMP</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+--bg:#070b16;--card:#0f1628;--line:#22304f;--tx:#e8eefc;--mut:#8b9bc0;--a:#22d3ee;--b:#8b5cf6;--ok:#34d399;--er:#fb7185;--inp:#0a1022}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]){--bg:#eef3fb;--card:#fff;--line:#d3dcee;--tx:#0d1730;--mut:#5a6b8f;--inp:#f4f7fd;--a:#0891b2;--b:#7c3aed}}
+:root[data-theme="light"]{--bg:#eef3fb;--card:#fff;--line:#d3dcee;--tx:#0d1730;--mut:#5a6b8f;--inp:#f4f7fd;--a:#0891b2;--b:#7c3aed}
+:root[data-theme="dark"]{--bg:#070b16;--card:#0f1628;--line:#22304f;--tx:#e8eefc;--mut:#8b9bc0}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.5 system-ui,-apple-system,"Noto Sans Thai",Roboto,sans-serif;background-image:radial-gradient(600px 300px at 90% -5%,rgba(139,92,246,.25),transparent),radial-gradient(500px 280px at -10% 0,rgba(34,211,238,.18),transparent);background-repeat:no-repeat}
+.w{max-width:560px;margin:0 auto;padding:16px 14px 40px}
+header{display:flex;align-items:center;gap:12px;margin:6px 0 16px}
+header svg{width:58px;height:58px;flex:none;filter:drop-shadow(0 4px 14px rgba(34,211,238,.35))}
+h1{font-size:19px;line-height:1.15;margin:0;font-weight:800}
+h1 span{background:linear-gradient(90deg,var(--a),var(--b));-webkit-background-clip:text;background-clip:text;color:transparent}
+.sub{color:var(--mut);font-size:12.5px;margin-top:3px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:14px;margin-bottom:12px}
+.card h2{font-size:14px;margin:0 0 10px;display:flex;align-items:center;gap:8px}
+.n{width:22px;height:22px;border-radius:50%;background:linear-gradient(135deg,var(--a),var(--b));color:#fff;font-size:12px;display:grid;place-items:center;flex:none}
+.g{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+button,.btn{font:inherit;color:var(--tx);background:var(--inp);border:1px solid var(--line);border-radius:12px;padding:12px 10px;cursor:pointer;text-align:center;font-weight:600;font-size:14px}
+button:active{transform:scale(.97)}
+.pri{background:linear-gradient(90deg,var(--a),var(--b));border:0;color:#fff;width:100%;padding:14px;font-size:16px;font-weight:800;box-shadow:0 6px 22px rgba(139,92,246,.35)}
+.pri:disabled{opacity:.4;box-shadow:none}
+input[type=text]{width:100%;font:inherit;color:var(--tx);background:var(--inp);border:1px solid var(--line);border-radius:10px;padding:10px;margin-top:4px}
+label{display:block;font-size:12px;color:var(--mut);margin-top:10px}
+.row{display:flex;gap:8px}.row>*{flex:1;min-width:0}
+.st{font-size:13px;color:var(--mut);margin-top:10px;word-break:break-word}
+.st b{color:var(--tx)}.ok{color:var(--ok)}.er{color:var(--er)}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.chip{font-size:11.5px;padding:3px 9px;border-radius:99px;border:1px solid var(--line);color:var(--mut)}
+.chip.y{color:var(--ok);border-color:var(--ok)}
+.bar{height:6px;border-radius:9px;background:var(--inp);overflow:hidden;margin-top:10px}
+.bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--a),var(--b))}
+.pre{overflow-x:auto;max-height:180px;background:var(--inp);border:1px solid var(--line);border-radius:10px;padding:10px;font:11px/1.45 ui-monospace,Menlo,monospace;white-space:pre;margin:10px 0 0}
+ol{margin:0;padding-left:20px;font-size:13.5px}ol li{margin:5px 0}
+code{background:var(--inp);padding:1px 5px;border-radius:5px;font-size:12px}
+.hide{display:none}
+.chk{display:flex;gap:8px;align-items:center;margin-top:10px;font-size:13px;color:var(--tx)}
+</style>
+</head>
+<body>
+<div class="w">
+<header>
+<svg viewBox="0 0 64 64" aria-label="Build APK logo"><defs><linearGradient id="lg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#22d3ee"/><stop offset="1" stop-color="#8b5cf6"/></linearGradient></defs>
+<rect x="2" y="2" width="60" height="60" rx="16" fill="url(#lg)"/>
+<path d="M32 9 49 18.5v19L32 47 15 37.5v-19z" fill="none" stroke="#fff" stroke-width="2.6" stroke-linejoin="round" opacity=".95"/>
+<path d="M15 18.5 32 28l17-9.500M32 28v19" fill="none" stroke="#fff" stroke-width="2.2" stroke-linejoin="round" opacity=".7"/>
+<path d="M32 12v10M27.500 18 32 22.500 36.500 18" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="32" y="58" text-anchor="middle" font-family="system-ui,Arial,sans-serif" font-weight="900" font-size="9.500" fill="#fff" letter-spacing=".5">BUILD APK</text></svg>
+<div><h1><span>Build APK</span><br>By IDOL_CHAMP</h1><div class="sub">แปลงแอปจาก Google AI Studio เป็น APK · ใช้บนมือถือล้วน ไม่ต้อง Root</div></div>
+</header>
+
+<div class="card"><h2><i class="n">1</i>นำเข้าโปรเจกต์</h2>
+<div class="g">
+<button id="bz">📦 ไฟล์ ZIP</button><button id="bf">📁 โฟลเดอร์</button>
+</div>
+<input type="file" id="fz" accept=".zip,application/zip" class="hide">
+<input type="file" id="ff" webkitdirectory multiple class="hide">
+<label>หรือ GitHub repository (owner/repo)</label>
+<div class="row"><input type="text" id="gr" placeholder="เช่น idol/my-app" autocapitalize="off"><input type="text" id="gb" placeholder="branch (main)" style="max-width:34%" autocapitalize="off"></div>
+<button id="bg" style="width:100%;margin-top:8px">⬇️ ดึงจาก GitHub</button>
+<div class="st" id="imp">ยังไม่ได้เลือกโปรเจกต์</div>
+<div class="chips" id="chips"></div>
+</div>
+
+<div class="card" id="c2"><h2><i class="n">2</i>ตั้งค่าแอป</h2>
+<label>ชื่อแอป</label><input type="text" id="an">
+<label>Package ID</label><input type="text" id="ap" autocapitalize="off">
+<div class="row"><div><label>Version name</label><input type="text" id="vn" value="1.0.0"></div><div><label>Version code</label><input type="text" id="vc" value="1" inputmode="numeric"></div></div>
+<div class="row"><div><label>Build command</label><input type="text" id="bc" value="npm run build"></div><div><label>Output dir</label><input type="text" id="od" value="dist"></div></div>
+<div class="chk"><input type="checkbox" id="gk" checked><span>ใช้ <code>GEMINI_API_KEY</code> จาก GitHub Secret ตอน build</span></div>
+</div>
+
+<div class="card"><h2><i class="n">3</i>สร้างชุด Build Kit</h2>
+<button class="pri" id="go" disabled>🚀 สร้าง Build Kit (.zip)</button>
+<div class="bar"><i id="pb"></i></div>
+<div class="st" id="gs"></div>
+<button id="dl" class="hide" style="width:100%;margin-top:8px">💾 ดาวน์โหลดอีกครั้ง</button>
+</div>
+
+<div class="card"><h2><i class="n">4</i>Build บน GitHub Actions (ฟรี)</h2>
+<ol>
+<li>สร้าง repo ใหม่บน GitHub (Private ก็ได้) แล้วอัปโหลดไฟล์จาก Build Kit (แตก zip ก่อน)</li>
+<li>ถ้าใช้ Gemini: Settings → Secrets → Actions → เพิ่ม <code>GEMINI_API_KEY</code></li>
+<li>แท็บ <b>Actions</b> → <b>Build APK</b> → Run workflow</li>
+<li>รอ ~5–8 นาที → โหลด <code>app-debug.apk</code> จาก Artifacts → ติดตั้งบน Xiaomi (อนุญาต “ติดตั้งแอปที่ไม่รู้จัก”)</li>
+</ol>
+<div class="st">มี repo อยู่แล้ว? คัดลอกเฉพาะไฟล์ workflow ไปวางที่ <code>.github/workflows/build-apk.yml</code></div>
+<div class="g" style="margin-top:8px"><button id="cp">📋 คัดลอก Workflow</button><button id="dw">💾 โหลดเป็น .txt</button></div>
+<pre class="pre" id="wf"></pre>
+<div class="st">⚠️ API key ที่ฝังใน APK ดึงออกได้ ควรจำกัดโควต้า/ใช้ proxy ถ้าจะเผยแพร่จริง</div>
+</div>
+</div>
+
+<script>
+(function(){
+const $=id=>document.getElementById(id);
+const SKIP=/(^|\/)(node_modules|\.git|dist|build|android|\.DS_Store)(\/|$)/;
+let files=[],pkg=null,kit=null;
+
+function setStatus(el,html,cls){el.className='st '+(cls||'');el.innerHTML=html}
+function slug(s){return (s||'app').toLowerCase().replace(/[^a-z0-9]+/g,'').replace(/^[0-9]+/,'')||'app'}
+function strip(paths){ // remove common top folder
+  const tops=new Set(paths.map(p=>p.split('/')[0]));
+  const multi=paths.every(p=>p.includes('/'));
+  return (tops.size===1&&multi)?p=>p.split('/').slice(1).join('/'):p=>p;
+}
+async function finish(list,label){
+  const f=strip(list.map(x=>x.path));
+  files=list.map(x=>({path:f(x.path),get:x.get})).filter(x=>x.path&&!SKIP.test(x.path));
+  pkg=null;
+  const pj=files.find(x=>x.path==='package.json');
+  if(pj){try{pkg=JSON.parse(new TextDecoder().decode(await pj.get()))}catch(e){}}
+  const has=n=>files.some(x=>x.path===n||x.path.startsWith(n));
+  const dep=Object.assign({},pkg&&pkg.dependencies,pkg&&pkg.devDependencies);
+  const chips=[['package.json',!!pkg],['index.html',has('index.html')],['Vite',!!dep.vite],['React',!!dep.react],['@google/genai',!!(dep['@google/genai']||dep['@google/generative-ai'])]];
+  $('chips').innerHTML=chips.map(c=>'<span class="chip '+(c[1]?'y':'')+'">'+(c[1]?'✓ ':'✗ ')+c[0]+'</span>').join('');
+  setStatus($('imp'),'<b>'+label+'</b> · '+files.length+' ไฟล์'+(pkg?'':'<br>⚠️ ไม่พบ package.json ที่ root'),pkg?'ok':'er');
+  const nm=(pkg&&pkg.name)||label.replace(/\.zip$/i,'');
+  $('an').value=nm.replace(/[-_]+/g,' ').replace(/\b\w/g,c=>c.toUpperCase());
+  $('ap').value='com.idolchamp.'+slug(nm);
+  if(pkg&&pkg.scripts&&!pkg.scripts.build)$('bc').value='npx vite build';
+  $('go').disabled=!files.length;kit=null;$('dl').classList.add('hide');
+}
+async function fromZip(buf,label){
+  const z=await JSZip.loadAsync(buf);const list=[];
+  z.forEach((p,e)=>{if(!e.dir)list.push({path:p,get:()=>e.async('uint8array')})});
+  await finish(list,label);
+}
+$('bz').onclick=()=>$('fz').click();$('bf').onclick=()=>$('ff').click();
+$('fz').onchange=async e=>{const f=e.target.files[0];if(!f)return;setStatus($('imp'),'กำลังอ่าน ZIP…');
+  try{await fromZip(await f.arrayBuffer(),f.name)}catch(x){setStatus($('imp'),'อ่าน ZIP ไม่สำเร็จ: '+x.message,'er')}};
+$('ff').onchange=async e=>{const fl=[...e.target.files];if(!fl.length)return;
+  const list=fl.map(f=>({path:f.webkitRelativePath||f.name,get:async()=>new Uint8Array(await f.arrayBuffer())}));
+  await finish(list,(fl[0].webkitRelativePath||'').split('/')[0]||'folder')};
+$('bg').onclick=async()=>{
+  const repo=$('gr').value.trim().replace(/^https?:\/\/github\.com\//,'').replace(/\.git$/,'').replace(/\/$/,'');
+  if(!/^[\w.-]+\/[\w.-]+$/.test(repo)){setStatus($('imp'),'รูปแบบต้องเป็น owner/repo','er');return}
+  const br=$('gb').value.trim();setStatus($('imp'),'กำลังดึง '+repo+'…');
+  try{
+    const r=await fetch('https://api.github.com/repos/'+repo+'/zipball'+(br?'/'+encodeURIComponent(br):''));
+    if(!r.ok)throw new Error('HTTP '+r.status+(r.status===404?' (repo เป็น private หรือไม่พบ)':''));
+    await fromZip(await r.arrayBuffer(),repo.split('/')[1]);
+  }catch(x){setStatus($('imp'),'ดึงจาก GitHub ไม่ได้ในหน้านี้ ('+x.message+')<br>วิธีแก้: ใน GitHub กด Code → Download ZIP แล้วนำเข้าด้วยปุ่ม “ไฟล์ ZIP”','er')}};
+
+function workflow(){
+  const g=$('gk').checked,bc=$('bc').value||'npm run build',od=($('od').value||'dist').replace(/[^\w./-]/g,'');
+  const vn=$('vn').value||'1.0.0',vc=$('vc').value||'1';
+  const q=x=>String(x).replace(/['"\\$`]/g,' ');
+  const cfg=JSON.stringify({appId:$('ap').value,appName:q($('an').value),webDir:od,server:{androidScheme:'https'}});
+  const S='${{ secrets.GEMINI_API_KEY }}';
+  const L=['name: Build APK','on:','  workflow_dispatch:','  push:','    branches: [main, master]','jobs:','  apk:','    runs-on: ubuntu-24.04','    steps:',
+  '      - uses: actions/checkout@v5',
+  '      - uses: actions/setup-node@v5','        with:','          node-version: 22',
+  '      - uses: actions/setup-java@v5','        with:','          distribution: temurin','          java-version: 21',
+  '      - name: Locate project','        run: |',
+  "          F=$(find . -name package.json -not -path '*/node_modules/*' | head -n 1)",
+  '          if [ -z "$F" ]; then echo "::error::package.json not found. Upload the project files (not a nested zip)."; ls -la; exit 1; fi',
+  '          echo "P=$(dirname "$F")" >> "$GITHUB_ENV"; echo "Project dir: $(dirname "$F")"',
+  '      - name: Install','        run: cd "$P" && npm install',
+  '      - name: Build web','        run: cd "$P" && '+bc+' -- --base=./'];
+  if(g)L.push('        env:','          GEMINI_API_KEY: '+S);
+  L.push('      - name: Add Capacitor Android','        run: |','          cd "$P"',
+  "          echo '"+cfg+"' > capacitor.config.json",
+  '          npm install @capacitor/core@7 @capacitor/cli@7 @capacitor/android@7 --no-save',
+  '          ls -la '+od,
+  '          npx cap add android','          npx cap sync android',
+  '          sed -i "s/versionCode 1/versionCode '+vc+'/; s/versionName \\"1.0\\"/versionName \\"'+vn+'\\"/" android/app/build.gradle',
+  '      - name: Assemble APK','        run: cd "$P/android" && chmod +x gradlew && ./gradlew assembleDebug --no-daemon',
+  '      - uses: actions/upload-artifact@v4','        with:','          name: app-debug-apk','          path: "**/app-debug.apk"');
+  return L.join('\n')+'\n';
+}
+function capcfg(){return JSON.stringify({appId:$('ap').value,appName:$('an').value,webDir:$('od').value||'dist',server:{androidScheme:'https'}},null,2)}
+function refresh(){$('wf').textContent=workflow()}
+['an','ap','vn','vc','bc','od','gk'].forEach(i=>$(i).addEventListener('input',refresh));refresh();
+
+async function save(name,data){
+  try{const d=await claude.use('downloads');if(!d){setStatus($('gs'),'ดาวน์โหลดไม่พร้อมใช้งานในมุมมองนี้','er');return false}
+    await d.save({filename:name,data});return true}
+  catch(e){if(e&&e.code==='declined')return false;setStatus($('gs'),'บันทึกไม่สำเร็จ: '+(e&&e.message||e),'er');return false}
+}
+$('go').onclick=async()=>{
+  if(!/^[a-z][a-z0-9_]*(\.[a-z][a-z0-9_]*)+$/.test($('ap').value)){setStatus($('gs'),'Package ID ไม่ถูกต้อง (เช่น com.idolchamp.myapp)','er');return}
+  $('go').disabled=true;setStatus($('gs'),'กำลังรวมไฟล์…');
+  try{
+    const z=new JSZip();
+    for(const f of files)z.file(f.path,await f.get(),{binary:true});
+    z.file('.github/workflows/build-apk.yml',workflow());
+    z.file('capacitor.config.json',capcfg());
+    z.file('BUILD_APK_README.txt','Build APK By IDOL_CHAMP\nอัปโหลดไฟล์ทั้งหมดขึ้น GitHub แล้วรัน Actions > Build APK\nเพิ่ม Secret: GEMINI_API_KEY (ถ้าแอปใช้ Gemini)\n');
+    const blob=await z.generateAsync({type:'blob',compression:'DEFLATE',compressionOptions:{level:6}},m=>{$('pb').style.width=m.percent.toFixed(0)+'%'});
+    kit=blob;$('pb').style.width='100%';
+    setStatus($('gs'),'เสร็จแล้ว · '+(blob.size/1048576).toFixed(2)+' MB','ok');
+    $('dl').classList.remove('hide');
+    await save(slug($('an').value)+'-build-kit.zip',blob);
+  }catch(x){setStatus($('gs'),'ผิดพลาด: '+x.message,'er')}
+  $('go').disabled=false;
+};
+$('dl').onclick=()=>kit&&save(slug($('an').value)+'-build-kit.zip',kit);
+$('dw').onclick=()=>save('build-apk-workflow.txt',workflow());
+$('cp').onclick=async()=>{
+  try{await navigator.clipboard.writeText(workflow());$('cp').textContent='✅ คัดลอกแล้ว'}
+  catch(e){const r=document.createRange();r.selectNodeContents($('wf'));const s=getSelection();s.removeAllRanges();s.addRange(r);$('cp').textContent='แตะค้างเพื่อคัดลอก'}
+  setTimeout(()=>$('cp').textContent='📋 คัดลอก Workflow',2500)};
+})();
+</script>
+</body>
+</html>

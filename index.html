@@ -74,12 +74,12 @@ code{background:var(--inp);padding:1px 5px;border-radius:5px;font-size:12px}
 <label>ชื่อแอป</label><input type="text" id="an">
 <label>Package ID</label><input type="text" id="ap" autocapitalize="off">
 <div class="row"><div><label>Version name</label><input type="text" id="vn" value="1.0.0"></div><div><label>Version code</label><input type="text" id="vc" value="1" inputmode="numeric"></div></div>
-<div class="row"><div><label>Build command</label><input type="text" id="bc" value="npm run build"></div><div><label>Output dir</label><input type="text" id="od" value="dist"></div></div>
+<div class="row" id="webrow"><div><label>Build command</label><input type="text" id="bc" value="npm run build"></div><div><label>Output dir</label><input type="text" id="od" value="dist"></div></div>
 <div class="chk"><input type="checkbox" id="gk" checked><span>ใช้ <code>GEMINI_API_KEY</code> จาก GitHub Secret ตอน build</span></div>
 </div>
 
 <div class="card"><h2><i class="n">3</i>สร้างชุด Build Kit</h2>
-<button class="pri" id="go" disabled>🚀 สร้าง Build Kit (.zip)</button>
+<button class="pri" id="go" disabled>🚀 สร้าง Build Kit (ทางเลือก)</button>
 <div class="bar"><i id="pb"></i></div>
 <div class="st" id="gs"></div>
 <button id="dl" class="hide" style="width:100%;margin-top:8px">💾 ดาวน์โหลดอีกครั้ง</button>
@@ -87,12 +87,13 @@ code{background:var(--inp);padding:1px 5px;border-radius:5px;font-size:12px}
 
 <div class="card"><h2><i class="n">4</i>Build บน GitHub Actions (ฟรี)</h2>
 <ol>
-<li>สร้าง repo ใหม่บน GitHub (Private ก็ได้) แล้วอัปโหลดไฟล์จาก Build Kit (แตก zip ก่อน)</li>
-<li>ถ้าใช้ Gemini: Settings → Secrets → Actions → เพิ่ม <code>GEMINI_API_KEY</code></li>
-<li>แท็บ <b>Actions</b> → <b>Build APK</b> → Run workflow</li>
-<li>รอ ~5–8 นาที → โหลด <code>app-debug.apk</code> จาก Artifacts → ติดตั้งบน Xiaomi (อนุญาต “ติดตั้งแอปที่ไม่รู้จัก”)</li>
+<li>สร้าง repo ใหม่บน GitHub (Private ก็ได้)</li>
+<li><b>Add file → Create new file</b> ตั้งชื่อ <code>.github/workflows/build-apk.yml</code> → วาง Workflow (ปุ่มด้านล่าง) → Commit</li>
+<li>ถ้าใช้ Gemini: Settings → Secrets and variables → Actions → เพิ่ม <code>GEMINI_API_KEY</code></li>
+<li><b>Add file → Upload files</b> → เลือก <b>ไฟล์ ZIP ต้นฉบับ</b> ไฟล์เดียว (ไม่ต้องแตก) → Commit ระบบจะ build อัตโนมัติ</li>
+<li>แท็บ <b>Actions</b> → รอ ~5–10 นาที → เปิด run ล่าสุด → โหลด <code>app-debug-apk</code> ที่ Artifacts → ติดตั้งบน Xiaomi</li>
 </ol>
-<div class="st">มี repo อยู่แล้ว? คัดลอกเฉพาะไฟล์ workflow ไปวางที่ <code>.github/workflows/build-apk.yml</code></div>
+<div class="st">วิธีนี้ไม่ต้องใช้ Build Kit — ปุ่มสร้าง Kit ด้านบนเป็นทางเลือกเท่านั้น</div>
 <div class="g" style="margin-top:8px"><button id="cp">📋 คัดลอก Workflow</button><button id="dw">💾 โหลดเป็น .txt</button></div>
 <pre class="pre" id="wf"></pre>
 <div class="st">⚠️ API key ที่ฝังใน APK ดึงออกได้ ควรจำกัดโควต้า/ใช้ proxy ถ้าจะเผยแพร่จริง</div>
@@ -103,7 +104,7 @@ code{background:var(--inp);padding:1px 5px;border-radius:5px;font-size:12px}
 (function(){
 const $=id=>document.getElementById(id);
 const SKIP=/(^|\/)(node_modules|\.git|dist|build|android|\.DS_Store)(\/|$)/;
-let files=[],pkg=null,kit=null;
+let files=[],pkg=null,kit=null,mode='',gradleVer='',gpre=null;
 
 function setStatus(el,html,cls){el.className='st '+(cls||'');el.innerHTML=html}
 function slug(s){return (s||'app').toLowerCase().replace(/[^a-z0-9]+/g,'').replace(/^[0-9]+/,'')||'app'}
@@ -115,18 +116,34 @@ function strip(paths){ // remove common top folder
 async function finish(list,label){
   const f=strip(list.map(x=>x.path));
   files=list.map(x=>({path:f(x.path),get:x.get})).filter(x=>x.path&&!SKIP.test(x.path));
-  pkg=null;
-  const pj=files.find(x=>x.path==='package.json');
-  if(pj){try{pkg=JSON.parse(new TextDecoder().decode(await pj.get()))}catch(e){}}
-  const has=n=>files.some(x=>x.path===n||x.path.startsWith(n));
+  pkg=null;mode='';
+  const depth=p=>p.split('/').length;
+  const pjs=files.filter(x=>/(^|\/)package\.json$/.test(x.path)).sort((p,q)=>depth(p.path)-depth(q.path));
+  const gr=files.filter(x=>/(^|\/)(gradlew|settings\.gradle(\.kts)?)$/.test(x.path));
+  if(pjs.length){mode='web';try{pkg=JSON.parse(new TextDecoder().decode(await pjs[0].get()))}catch(e){}}
+  else if(gr.length)mode='gradle';
+  if(mode==='gradle'){
+    const rd=async re=>{const f=files.find(x=>re.test(x.path));return f?new TextDecoder().decode(await f.get()):''};
+    const wp=await rd(/gradle-wrapper\.properties$/),bg=await rd(/(^|\/)app\/build\.gradle(\.kts)?$/),st=await rd(/res\/values\/strings\.xml$/);
+    gradleVer=(wp.match(/gradle-([\d.]+)-(bin|all)/)||[])[1]||'';
+    const m=(re,t)=>(t.match(re)||[])[1];
+    gpre={id:m(/applicationId\s*=\s*"([^"]+)"/,bg),vn:m(/versionName\s*=\s*"([^"]+)"/,bg),vc:m(/versionCode\s*=\s*(\d+)/,bg),name:m(/name="app_name">([^<]+)</,st)};
+  }
+  const root=pjs.length?pjs[0].path.replace(/package\.json$/,''):'';
+  const has=n=>files.some(x=>x.path===root+n||x.path.startsWith(root+n));
   const dep=Object.assign({},pkg&&pkg.dependencies,pkg&&pkg.devDependencies);
-  const chips=[['package.json',!!pkg],['index.html',has('index.html')],['Vite',!!dep.vite],['React',!!dep.react],['@google/genai',!!(dep['@google/genai']||dep['@google/generative-ai'])]];
+  const chips=[['package.json',!!pkg],['index.html',has('index.html')],['Vite',!!dep.vite],['React',!!dep.react],['@google/genai',!!(dep['@google/genai']||dep['@google/generative-ai'])],['Gradle/Android',!!gr.length]];
   $('chips').innerHTML=chips.map(c=>'<span class="chip '+(c[1]?'y':'')+'">'+(c[1]?'✓ ':'✗ ')+c[0]+'</span>').join('');
-  setStatus($('imp'),'<b>'+label+'</b> · '+files.length+' ไฟล์'+(pkg?'':'<br>⚠️ ไม่พบ package.json ที่ root'),pkg?'ok':'er');
-  const nm=(pkg&&pkg.name)||label.replace(/\.zip$/i,'');
-  $('an').value=nm.replace(/[-_]+/g,' ').replace(/\b\w/g,c=>c.toUpperCase());
-  $('ap').value='com.idolchamp.'+slug(nm);
+  const tops=[...new Set(files.map(x=>x.path.split('/')[0]+(x.path.includes('/')?'/':'')))].slice(0,10).join('  ');
+  const msg=mode==='web'?'โปรเจกต์เว็บ (Vite/Node)'+(root?' · root: '+root:''):mode==='gradle'?'โปรเจกต์ Android native (Kotlin/Gradle)'+(gradleVer?' · Gradle '+gradleVer:''):'⚠️ ไม่พบ package.json หรือ Gradle — ไม่ใช่โปรเจกต์ที่ build ได้';
+  setStatus($('imp'),'<b>'+label+'</b> · '+files.length+' ไฟล์<br>'+msg+'<br><small>ไฟล์ระดับบน: '+tops+'</small>',mode?'ok':'er');
+  const nm=(pkg&&pkg.name)||label.replace(/\.zip$/i,'').replace(/-main$/,'');
+  $('webrow').classList.toggle('hide',mode==='gradle');
+  if(mode==='gradle'&&gpre){$('an').value=gpre.name||nm;$('ap').value=gpre.id||('com.idolchamp.'+slug(nm));$('vn').value=gpre.vn||'1.0';$('vc').value=gpre.vc||'1'}
+  else{$('an').value=nm.replace(/[-_]+/g,' ').replace(/\b\w/g,c=>c.toUpperCase());
+  $('ap').value='com.idolchamp.'+slug(nm);}
   if(pkg&&pkg.scripts&&!pkg.scripts.build)$('bc').value='npx vite build';
+  refresh();
   $('go').disabled=!files.length;kit=null;$('dl').classList.add('hide');
 }
 async function fromZip(buf,label){
@@ -150,14 +167,38 @@ $('bg').onclick=async()=>{
     await fromZip(await r.arrayBuffer(),repo.split('/')[1]);
   }catch(x){setStatus($('imp'),'ดึงจาก GitHub ไม่ได้ในหน้านี้ ('+x.message+')<br>วิธีแก้: ใน GitHub กด Code → Download ZIP แล้วนำเข้าด้วยปุ่ม “ไฟล์ ZIP”','er')}};
 
+const EXTRACT=['      - name: Extract project zip','        run: |','          shopt -s nullglob','          for z in *.zip; do echo "Extracting $z"; unzip -oq "$z" -d _src; done'];
+const ON=['on:','  workflow_dispatch:','  push:','    paths: ["*.zip"]'];
+function gradleWf(){
+  const g=$('gk').checked,vn=($('vn').value||'1.0').replace(/[^\w.-]/g,''),vc=($('vc').value||'1').replace(/\D/g,'')||'1',id=($('ap').value||'').replace(/[^\w.]/g,'');
+  const S='${{ secrets.GEMINI_API_KEY }}';
+  const L=['name: Build APK',...ON,'jobs:','  apk:','    runs-on: ubuntu-24.04','    steps:',
+  '      - uses: actions/checkout@v5',...EXTRACT,
+  '      - uses: actions/setup-java@v5','        with:','          distribution: temurin','          java-version: 21',
+  '      - uses: gradle/actions/setup-gradle@v5','        with:','          gradle-version: '+(gradleVer||'current'),
+  '      - name: Locate project','        run: |',
+  '          F=$(find . -name "settings.gradle*" -not -path "./.git/*" | head -n 1)',
+  '          if [ -z "$F" ]; then echo "::error::settings.gradle not found. Upload the project zip to the repo root."; ls -la; exit 1; fi',
+  '          echo "P=$(dirname "$F")" >> "$GITHUB_ENV"; echo "Project dir: $(dirname "$F")"',
+  '      - name: Accept SDK licenses','        run: |','          yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses > /dev/null || true',
+  '      - name: Prepare','        run: |','          cd "$P"',
+  '          [ -f debug.keystore ] || keytool -genkeypair -keystore debug.keystore -storepass android -alias androiddebugkey -keypass android -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=Android Debug,O=Android,C=US"',
+  "          sed -i -E 's/versionCode = [0-9]+/versionCode = "+vc+"/; s/versionName = \".*\"/versionName = \""+vn+"\"/; s/applicationId = \".*\"/applicationId = \""+id+"\"/' app/build.gradle.kts"];
+  if(g)L.push('          if [ -n "$GEMINI_API_KEY" ]; then echo "GEMINI_API_KEY=$GEMINI_API_KEY" > .env; fi','        env:','          GEMINI_API_KEY: '+S);
+  L.push('      - name: Build debug APK','        run: |','          cd "$P"',
+  '          if [ -f gradlew ] && [ -f gradle/wrapper/gradle-wrapper.jar ]; then chmod +x gradlew; ./gradlew assembleDebug --no-daemon --stacktrace; else gradle assembleDebug --no-daemon --stacktrace; fi',
+  '      - uses: actions/upload-artifact@v4','        with:','          name: app-debug-apk','          path: "**/build/outputs/apk/debug/*.apk"');
+  return L.join('\n')+'\n';
+}
 function workflow(){
+  if(mode==='gradle')return gradleWf();
   const g=$('gk').checked,bc=$('bc').value||'npm run build',od=($('od').value||'dist').replace(/[^\w./-]/g,'');
   const vn=$('vn').value||'1.0.0',vc=$('vc').value||'1';
   const q=x=>String(x).replace(/['"\\$`]/g,' ');
   const cfg=JSON.stringify({appId:$('ap').value,appName:q($('an').value),webDir:od,server:{androidScheme:'https'}});
   const S='${{ secrets.GEMINI_API_KEY }}';
-  const L=['name: Build APK','on:','  workflow_dispatch:','  push:','    branches: [main, master]','jobs:','  apk:','    runs-on: ubuntu-24.04','    steps:',
-  '      - uses: actions/checkout@v5',
+  const L=['name: Build APK',...ON,'jobs:','  apk:','    runs-on: ubuntu-24.04','    steps:',
+  '      - uses: actions/checkout@v5',...EXTRACT,
   '      - uses: actions/setup-node@v5','        with:','          node-version: 22',
   '      - uses: actions/setup-java@v5','        with:','          distribution: temurin','          java-version: 21',
   '      - name: Locate project','        run: |',
@@ -182,9 +223,14 @@ function refresh(){$('wf').textContent=workflow()}
 ['an','ap','vn','vc','bc','od','gk'].forEach(i=>$(i).addEventListener('input',refresh));refresh();
 
 async function save(name,data){
-  try{const d=await claude.use('downloads');if(!d){setStatus($('gs'),'ดาวน์โหลดไม่พร้อมใช้งานในมุมมองนี้','er');return false}
-    await d.save({filename:name,data});return true}
-  catch(e){if(e&&e.code==='declined')return false;setStatus($('gs'),'บันทึกไม่สำเร็จ: '+(e&&e.message||e),'er');return false}
+  try{
+    const d=(typeof claude!=='undefined'&&claude.use)?await claude.use('downloads'):null;
+    if(d){await d.save({filename:name,data});return true}
+    const blob=data instanceof Blob?data:new Blob([data]);
+    const u=URL.createObjectURL(blob),a=document.createElement('a');a.href=u;a.download=name;document.body.appendChild(a);a.click();a.remove();
+    setStatus($('gs'),'หน้านี้ไม่รองรับการดาวน์โหลดโดยตรง — เปิดแอปนี้จากลิงก์ที่เผยแพร่ (ปุ่ม Open ในการ์ด) แทนการดูในแชท หรือใช้ปุ่ม “คัดลอก Workflow” ด้านล่างแทนการโหลด Kit','er');
+    return false;
+  }catch(e){if(e&&e.code==='declined')return false;setStatus($('gs'),'บันทึกไม่สำเร็จ: '+(e&&e.message||e),'er');return false}
 }
 $('go').onclick=async()=>{
   if(!/^[a-z][a-z0-9_]*(\.[a-z][a-z0-9_]*)+$/.test($('ap').value)){setStatus($('gs'),'Package ID ไม่ถูกต้อง (เช่น com.idolchamp.myapp)','er');return}
@@ -193,7 +239,7 @@ $('go').onclick=async()=>{
     const z=new JSZip();
     for(const f of files)z.file(f.path,await f.get(),{binary:true});
     z.file('.github/workflows/build-apk.yml',workflow());
-    z.file('capacitor.config.json',capcfg());
+    if(mode==='web')z.file('capacitor.config.json',capcfg());
     z.file('BUILD_APK_README.txt','Build APK By IDOL_CHAMP\nอัปโหลดไฟล์ทั้งหมดขึ้น GitHub แล้วรัน Actions > Build APK\nเพิ่ม Secret: GEMINI_API_KEY (ถ้าแอปใช้ Gemini)\n');
     const blob=await z.generateAsync({type:'blob',compression:'DEFLATE',compressionOptions:{level:6}},m=>{$('pb').style.width=m.percent.toFixed(0)+'%'});
     kit=blob;$('pb').style.width='100%';

@@ -1,271 +1,505 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Build APK By IDOL_CHAMP</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-<style>
-:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
---bg:#070b16;--card:#0f1628;--line:#22304f;--tx:#e8eefc;--mut:#8b9bc0;--a:#22d3ee;--b:#8b5cf6;--ok:#34d399;--er:#fb7185;--inp:#0a1022}
-@media (prefers-color-scheme:light){:root:not([data-theme="dark"]){--bg:#eef3fb;--card:#fff;--line:#d3dcee;--tx:#0d1730;--mut:#5a6b8f;--inp:#f4f7fd;--a:#0891b2;--b:#7c3aed}}
-:root[data-theme="light"]{--bg:#eef3fb;--card:#fff;--line:#d3dcee;--tx:#0d1730;--mut:#5a6b8f;--inp:#f4f7fd;--a:#0891b2;--b:#7c3aed}
-:root[data-theme="dark"]{--bg:#070b16;--card:#0f1628;--line:#22304f;--tx:#e8eefc;--mut:#8b9bc0}
-html{scroll-padding-top:env(safe-area-inset-top,0px)}
-*{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.5 system-ui,-apple-system,"Noto Sans Thai",Roboto,sans-serif;background-image:radial-gradient(600px 300px at 90% -5%,rgba(139,92,246,.25),transparent),radial-gradient(500px 280px at -10% 0,rgba(34,211,238,.18),transparent);background-repeat:no-repeat}
-.w{max-width:560px;margin:0 auto;padding:16px 14px 40px}
-header{display:flex;align-items:center;gap:12px;margin:6px 0 16px}
-header svg{width:58px;height:58px;flex:none;filter:drop-shadow(0 4px 14px rgba(34,211,238,.35))}
-h1{font-size:19px;line-height:1.15;margin:0;font-weight:800}
-h1 span{background:linear-gradient(90deg,var(--a),var(--b));-webkit-background-clip:text;background-clip:text;color:transparent}
-.sub{color:var(--mut);font-size:12.5px;margin-top:3px}
-.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:14px;margin-bottom:12px}
-.card h2{font-size:14px;margin:0 0 10px;display:flex;align-items:center;gap:8px}
-.n{width:22px;height:22px;border-radius:50%;background:linear-gradient(135deg,var(--a),var(--b));color:#fff;font-size:12px;display:grid;place-items:center;flex:none}
-.g{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-button,.btn{font:inherit;color:var(--tx);background:var(--inp);border:1px solid var(--line);border-radius:12px;padding:12px 10px;cursor:pointer;text-align:center;font-weight:600;font-size:14px}
-button:active{transform:scale(.97)}
-.pri{background:linear-gradient(90deg,var(--a),var(--b));border:0;color:#fff;width:100%;padding:14px;font-size:16px;font-weight:800;box-shadow:0 6px 22px rgba(139,92,246,.35)}
-.pri:disabled{opacity:.4;box-shadow:none}
-input[type=text]{width:100%;font:inherit;color:var(--tx);background:var(--inp);border:1px solid var(--line);border-radius:10px;padding:10px;margin-top:4px}
-label{display:block;font-size:12px;color:var(--mut);margin-top:10px}
-.row{display:flex;gap:8px}.row>*{flex:1;min-width:0}
-.st{font-size:13px;color:var(--mut);margin-top:10px;word-break:break-word}
-.st b{color:var(--tx)}.ok{color:var(--ok)}.er{color:var(--er)}
-.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
-.chip{font-size:11.5px;padding:3px 9px;border-radius:99px;border:1px solid var(--line);color:var(--mut)}
-.chip.y{color:var(--ok);border-color:var(--ok)}
-.bar{height:6px;border-radius:9px;background:var(--inp);overflow:hidden;margin-top:10px}
-.bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--a),var(--b))}
-.pre{overflow-x:auto;max-height:180px;background:var(--inp);border:1px solid var(--line);border-radius:10px;padding:10px;font:11px/1.45 ui-monospace,Menlo,monospace;white-space:pre;margin:10px 0 0}
-ol{margin:0;padding-left:20px;font-size:13.5px}ol li{margin:5px 0}
-code{background:var(--inp);padding:1px 5px;border-radius:5px;font-size:12px}
-.hide{display:none}
-.chk{display:flex;gap:8px;align-items:center;margin-top:10px;font-size:13px;color:var(--tx)}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Build APK By IDOL_CHAMP</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <!-- JSZip for handling local zip files -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            accent: '#10b981' // Green for success
+                        },
+                        dark: {
+                            900: '#0f172a',
+                            800: '#1e293b',
+                            700: '#334155'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['Fira Code', 'monospace'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Inter:wght@400;500;600;700&display=swap');
+        
+        body {
+            background-color: #0f172a;
+            color: #f8fafc;
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+        }
+
+        /* Custom Scrollbar for Terminal */
+        .terminal-scroll::-webkit-scrollbar {
+            width: 8px;
+        }
+        .terminal-scroll::-webkit-scrollbar-track {
+            background: #0f172a;
+        }
+        .terminal-scroll::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 4px;
+        }
+        .terminal-scroll::-webkit-scrollbar-thumb:hover {
+            background: #475569;
+        }
+
+        /* Glassmorphism utilities */
+        .glass-panel {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* Blinking cursor for terminal */
+        .cursor-blink {
+            animation: blink 1s step-end infinite;
+        }
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+    </style>
 </head>
-<body>
-<div class="w">
-<header>
-<svg viewBox="0 0 64 64" aria-label="Build APK logo"><defs><linearGradient id="lg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#22d3ee"/><stop offset="1" stop-color="#8b5cf6"/></linearGradient></defs>
-<rect x="2" y="2" width="60" height="60" rx="16" fill="url(#lg)"/>
-<path d="M32 9 49 18.5v19L32 47 15 37.5v-19z" fill="none" stroke="#fff" stroke-width="2.6" stroke-linejoin="round" opacity=".95"/>
-<path d="M15 18.5 32 28l17-9.500M32 28v19" fill="none" stroke="#fff" stroke-width="2.2" stroke-linejoin="round" opacity=".7"/>
-<path d="M32 12v10M27.500 18 32 22.500 36.500 18" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-<text x="32" y="58" text-anchor="middle" font-family="system-ui,Arial,sans-serif" font-weight="900" font-size="9.500" fill="#fff" letter-spacing=".5">BUILD APK</text></svg>
-<div><h1><span>Build APK</span><br>By IDOL_CHAMP</h1><div class="sub">แปลงแอปจาก Google AI Studio เป็น APK · ใช้บนมือถือล้วน ไม่ต้อง Root</div></div>
-</header>
+<body class="min-h-screen flex flex-col selection:bg-brand-500 selection:text-white">
 
-<div class="card"><h2><i class="n">1</i>นำเข้าโปรเจกต์</h2>
-<div class="g">
-<button id="bz">📦 ไฟล์ ZIP</button><button id="bf">📁 โฟลเดอร์</button>
-</div>
-<input type="file" id="fz" accept=".zip,application/zip" class="hide">
-<input type="file" id="ff" webkitdirectory multiple class="hide">
-<label>หรือ GitHub repository (owner/repo)</label>
-<div class="row"><input type="text" id="gr" placeholder="เช่น idol/my-app" autocapitalize="off"><input type="text" id="gb" placeholder="branch (main)" style="max-width:34%" autocapitalize="off"></div>
-<button id="bg" style="width:100%;margin-top:8px">⬇️ ดึงจาก GitHub</button>
-<div class="st" id="imp">ยังไม่ได้เลือกโปรเจกต์</div>
-<div class="chips" id="chips"></div>
-</div>
+    <header class="w-full bg-dark-800 border-b border-dark-700 py-4 px-6 sticky top-0 z-50 shadow-lg">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <!-- Custom SVG Logo -->
+                <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-brand-500 to-brand-accent flex items-center justify-center shadow-lg shadow-brand-500/20">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 2L22 7.5V16.5L12 22L2 16.5V7.5L12 2Z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M12 22V12" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M22 7.5L12 12L2 7.5" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M17 4.5L7 10" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+                <div>
+                    <h1 class="text-xl md:text-2xl font-bold tracking-tight text-white flex items-center gap-2">
+                        Build APK
+                        <span class="text-xs bg-brand-500/20 text-brand-500 px-2 py-0.5 rounded-full border border-brand-500/30">PRO</span>
+                    </h1>
+                    <p class="text-xs text-slate-400 font-medium">By IDOL_CHAMP</p>
+                </div>
+            </div>
+            
+            <div class="hidden md:flex items-center gap-4 text-sm text-slate-400">
+                <div class="flex items-center gap-1">
+                    <i class="ph ph-device-mobile text-lg"></i>
+                    <span>Optimized for Android</span>
+                </div>
+                <div class="flex items-center gap-1">
+                    <i class="ph ph-cpu text-lg"></i>
+                    <span>Cloud Engine</span>
+                </div>
+            </div>
+        </div>
+    </header>
 
-<div class="card" id="c2"><h2><i class="n">2</i>ตั้งค่าแอป</h2>
-<label>ชื่อแอป</label><input type="text" id="an">
-<label>Package ID</label><input type="text" id="ap" autocapitalize="off">
-<div class="row"><div><label>Version name</label><input type="text" id="vn" value="1.0.0"></div><div><label>Version code</label><input type="text" id="vc" value="1" inputmode="numeric"></div></div>
-<div class="row" id="webrow"><div><label>Build command</label><input type="text" id="bc" value="npm run build"></div><div><label>Output dir</label><input type="text" id="od" value="dist"></div></div>
-<div class="chk"><input type="checkbox" id="gk" checked><span>ใช้ <code>GEMINI_API_KEY</code> จาก GitHub Secret ตอน build</span></div>
-</div>
+    <main class="flex-grow w-full max-w-7xl mx-auto p-4 md:p-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
+        
+        <!-- Left Panel: Input & Controls -->
+        <div class="lg:col-span-5 flex flex-col gap-6">
+            
+            <!-- Input Method Selector -->
+            <div class="glass-panel rounded-2xl p-5 shadow-xl">
+                <h2 class="text-lg font-semibold mb-4 flex items-center gap-2">
+                    <i class="ph ph-folder-open text-brand-500 text-xl"></i>
+                    เลือกแหล่งข้อมูลโปรเจกต์
+                </h2>
+                
+                <!-- Tabs -->
+                <div class="flex bg-dark-900 rounded-lg p-1 mb-5" role="tablist">
+                    <button id="tab-zip" onclick="switchTab('zip')" class="flex-1 py-2 text-sm font-medium rounded-md bg-dark-700 text-white shadow transition-all duration-200">
+                        ไฟล์ ZIP / โฟลเดอร์
+                    </button>
+                    <button id="tab-github" onclick="switchTab('github')" class="flex-1 py-2 text-sm font-medium rounded-md text-slate-400 hover:text-white transition-all duration-200">
+                        GitHub Repository
+                    </button>
+                </div>
 
-<div class="card"><h2><i class="n">3</i>สร้างชุด Build Kit</h2>
-<button class="pri" id="go" disabled>🚀 สร้าง Build Kit (ทางเลือก)</button>
-<div class="bar"><i id="pb"></i></div>
-<div class="st" id="gs"></div>
-<button id="dl" class="hide" style="width:100%;margin-top:8px">💾 ดาวน์โหลดอีกครั้ง</button>
-</div>
+                <!-- Tab Content: ZIP / Folder -->
+                <div id="content-zip" class="block animate-fade-in">
+                    <div id="drop-zone" class="border-2 border-dashed border-dark-700 hover:border-brand-500 bg-dark-900/50 rounded-xl p-8 text-center transition-colors duration-300 cursor-pointer relative overflow-hidden group">
+                        <input type="file" id="file-input" accept=".zip" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" onchange="handleFileSelect(event)">
+                        
+                        <div class="flex flex-col items-center justify-center gap-3">
+                            <div class="w-16 h-16 rounded-full bg-dark-800 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                                <i class="ph ph-file-zip text-3xl text-brand-500"></i>
+                            </div>
+                            <div>
+                                <p class="font-medium text-slate-200">แตะเพื่อเลือกไฟล์ หรือ ลากไฟล์มาวาง</p>
+                                <p class="text-xs text-slate-400 mt-1">รองรับไฟล์ .zip จาก Google AI Studio (สูงสุด 50MB)</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div id="file-info" class="hidden mt-4 bg-dark-800 rounded-lg p-3 border border-dark-700 flex items-center justify-between">
+                        <div class="flex items-center gap-3 overflow-hidden">
+                            <i class="ph ph-file-archive text-brand-500 text-xl"></i>
+                            <div class="truncate">
+                                <p id="file-name" class="text-sm font-medium text-white truncate"></p>
+                                <p id="file-size" class="text-xs text-slate-400"></p>
+                            </div>
+                        </div>
+                        <button onclick="clearFile()" class="p-2 hover:bg-dark-700 rounded-lg text-slate-400 hover:text-red-400 transition-colors">
+                            <i class="ph ph-x"></i>
+                        </button>
+                    </div>
+                </div>
 
-<div class="card"><h2><i class="n">4</i>Build บน GitHub Actions (ฟรี)</h2>
-<ol>
-<li>สร้าง repo ใหม่บน GitHub (Private ก็ได้)</li>
-<li><b>Add file → Create new file</b> ตั้งชื่อ <code>.github/workflows/build-apk.yml</code> → วาง Workflow (ปุ่มด้านล่าง) → Commit</li>
-<li>(ทางเลือก) Secret <code>KEYSTORE_B64</code> = base64 ของ keystore ถ้าอยากอัปเดตแอปทับของเดิมได้ ไม่ต้องถอนก่อน</li>
-<li>ถ้าใช้ Gemini: Settings → Secrets and variables → Actions → เพิ่ม <code>GEMINI_API_KEY</code></li>
-<li><b>Add file → Upload files</b> → เลือก <b>ไฟล์ ZIP ต้นฉบับ</b> ไฟล์เดียว (ไม่ต้องแตก) → Commit ระบบจะ build อัตโนมัติ</li>
-<li>แท็บ <b>Actions</b> → รอ ~5–10 นาที → เปิด run ล่าสุด → โหลด <code>app-debug-apk</code> ที่ Artifacts → ติดตั้งบน Xiaomi</li>
-</ol>
-<div class="st">วิธีนี้ไม่ต้องใช้ Build Kit — ปุ่มสร้าง Kit ด้านบนเป็นทางเลือกเท่านั้น</div>
-<div class="g" style="margin-top:8px"><button id="cp">📋 คัดลอก Workflow</button><button id="dw">💾 โหลดเป็น .txt</button></div>
-<pre class="pre" id="wf"></pre>
-<div class="st">⚠️ API key ที่ฝังใน APK ดึงออกได้ ควรจำกัดโควต้า/ใช้ proxy ถ้าจะเผยแพร่จริง</div>
-</div>
-</div>
+                <!-- Tab Content: GitHub -->
+                <div id="content-github" class="hidden animate-fade-in">
+                    <div class="flex flex-col gap-3">
+                        <label class="text-sm text-slate-300">URL ของ GitHub Repository</label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <i class="ph ph-github-logo text-slate-400 text-lg"></i>
+                            </div>
+                            <input type="url" id="github-url" placeholder="https://github.com/username/repo" class="w-full bg-dark-900 border border-dark-700 text-white rounded-lg pl-10 pr-4 py-3 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent transition-all placeholder-slate-600">
+                        </div>
+                        <p class="text-xs text-slate-400">ระบบจะทำการ Clone และ Build แบบอัตโนมัติ</p>
+                    </div>
+                </div>
+            </div>
 
-<script>
-(function(){
-const $=id=>document.getElementById(id);
-const SKIP=/(^|\/)(node_modules|\.git|dist|build|android|\.DS_Store)(\/|$)/;
-let files=[],pkg=null,kit=null,mode='',gradleVer='',gpre=null;
+            <!-- Configuration Panel -->
+            <div class="glass-panel rounded-2xl p-5 shadow-xl">
+                <h2 class="text-lg font-semibold mb-4 flex items-center gap-2">
+                    <i class="ph ph-sliders text-brand-500 text-xl"></i>
+                    ตั้งค่าแอปพลิเคชัน
+                </h2>
+                
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-medium text-slate-400 mb-1">Backend Server URL (Cloud/Local)</label>
+                        <input type="url" id="api-url" value="http://localhost:3000" placeholder="https://your-cloud-app.onrender.com" class="w-full bg-dark-900 border border-dark-700 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-brand-500 outline-none font-mono text-brand-400">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-slate-400 mb-1">ชื่อแอป (App Name)</label>
+                        <input type="text" id="app-name" value="My AI App" class="w-full bg-dark-900 border border-dark-700 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-brand-500 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-slate-400 mb-1">แพ็กเกจ (Package Name)</label>
+                        <input type="text" id="pkg-name" value="com.idolchamp.aiapp" class="w-full bg-dark-900 border border-dark-700 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-brand-500 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-slate-400 mb-1">ไอคอนแอป (เลือกไฟล์ .png)</label>
+                        <input type="file" accept="image/png" class="w-full text-sm text-slate-400 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-dark-700 file:text-white hover:file:bg-dark-600 cursor-pointer">
+                    </div>
+                </div>
 
-function setStatus(el,html,cls){el.className='st '+(cls||'');el.innerHTML=html}
-function slug(s){return (s||'app').toLowerCase().replace(/[^a-z0-9]+/g,'').replace(/^[0-9]+/,'')||'app'}
-function strip(paths){ // remove common top folder
-  const tops=new Set(paths.map(p=>p.split('/')[0]));
-  const multi=paths.every(p=>p.includes('/'));
-  return (tops.size===1&&multi)?p=>p.split('/').slice(1).join('/'):p=>p;
-}
-async function finish(list,label){
-  const f=strip(list.map(x=>x.path));
-  files=list.map(x=>({path:f(x.path),get:x.get})).filter(x=>x.path&&!SKIP.test(x.path));
-  pkg=null;mode='';
-  const depth=p=>p.split('/').length;
-  const pjs=files.filter(x=>/(^|\/)package\.json$/.test(x.path)).sort((p,q)=>depth(p.path)-depth(q.path));
-  const gr=files.filter(x=>/(^|\/)(gradlew|settings\.gradle(\.kts)?)$/.test(x.path));
-  if(pjs.length){mode='web';try{pkg=JSON.parse(new TextDecoder().decode(await pjs[0].get()))}catch(e){}}
-  else if(gr.length)mode='gradle';
-  if(mode==='gradle'){
-    const rd=async re=>{const f=files.find(x=>re.test(x.path));return f?new TextDecoder().decode(await f.get()):''};
-    const wp=await rd(/gradle-wrapper\.properties$/),bg=await rd(/(^|\/)app\/build\.gradle(\.kts)?$/),st=await rd(/res\/values\/strings\.xml$/);
-    gradleVer=(wp.match(/gradle-([\d.]+)-(bin|all)/)||[])[1]||'';
-    const m=(re,t)=>(t.match(re)||[])[1];
-    gpre={id:m(/applicationId\s*=\s*"([^"]+)"/,bg),vn:m(/versionName\s*=\s*"([^"]+)"/,bg),vc:m(/versionCode\s*=\s*(\d+)/,bg),name:m(/name="app_name">([^<]+)</,st)};
-  }
-  const root=pjs.length?pjs[0].path.replace(/package\.json$/,''):'';
-  const has=n=>files.some(x=>x.path===root+n||x.path.startsWith(root+n));
-  const dep=Object.assign({},pkg&&pkg.dependencies,pkg&&pkg.devDependencies);
-  const chips=[['package.json',!!pkg],['index.html',has('index.html')],['Vite',!!dep.vite],['React',!!dep.react],['@google/genai',!!(dep['@google/genai']||dep['@google/generative-ai'])],['Gradle/Android',!!gr.length]];
-  $('chips').innerHTML=chips.map(c=>'<span class="chip '+(c[1]?'y':'')+'">'+(c[1]?'✓ ':'✗ ')+c[0]+'</span>').join('');
-  const tops=[...new Set(files.map(x=>x.path.split('/')[0]+(x.path.includes('/')?'/':'')))].slice(0,10).join('  ');
-  const msg=mode==='web'?'โปรเจกต์เว็บ (Vite/Node)'+(root?' · root: '+root:''):mode==='gradle'?'โปรเจกต์ Android native (Kotlin/Gradle)'+(gradleVer?' · Gradle '+gradleVer:''):'⚠️ ไม่พบ package.json หรือ Gradle — ไม่ใช่โปรเจกต์ที่ build ได้';
-  setStatus($('imp'),'<b>'+label+'</b> · '+files.length+' ไฟล์<br>'+msg+'<br><small>ไฟล์ระดับบน: '+tops+'</small>',mode?'ok':'er');
-  const nm=(pkg&&pkg.name)||label.replace(/\.zip$/i,'').replace(/-main$/,'');
-  $('webrow').classList.toggle('hide',mode==='gradle');
-  if(mode==='gradle'&&gpre){$('an').value=gpre.name||nm;$('ap').value=gpre.id||('com.idolchamp.'+slug(nm));$('vn').value=gpre.vn||'1.0';$('vc').value=gpre.vc||'1'}
-  else{$('an').value=nm.replace(/[-_]+/g,' ').replace(/\b\w/g,c=>c.toUpperCase());
-  $('ap').value='com.idolchamp.'+slug(nm);}
-  if(pkg&&pkg.scripts&&!pkg.scripts.build)$('bc').value='npx vite build';
-  refresh();
-  $('go').disabled=!files.length;kit=null;$('dl').classList.add('hide');
-}
-async function fromZip(buf,label){
-  const z=await JSZip.loadAsync(buf);const list=[];
-  z.forEach((p,e)=>{if(!e.dir)list.push({path:p,get:()=>e.async('uint8array')})});
-  await finish(list,label);
-}
-$('bz').onclick=()=>$('fz').click();$('bf').onclick=()=>$('ff').click();
-$('fz').onchange=async e=>{const f=e.target.files[0];if(!f)return;setStatus($('imp'),'กำลังอ่าน ZIP…');
-  try{await fromZip(await f.arrayBuffer(),f.name)}catch(x){setStatus($('imp'),'อ่าน ZIP ไม่สำเร็จ: '+x.message,'er')}};
-$('ff').onchange=async e=>{const fl=[...e.target.files];if(!fl.length)return;
-  const list=fl.map(f=>({path:f.webkitRelativePath||f.name,get:async()=>new Uint8Array(await f.arrayBuffer())}));
-  await finish(list,(fl[0].webkitRelativePath||'').split('/')[0]||'folder')};
-$('bg').onclick=async()=>{
-  const repo=$('gr').value.trim().replace(/^https?:\/\/github\.com\//,'').replace(/\.git$/,'').replace(/\/$/,'');
-  if(!/^[\w.-]+\/[\w.-]+$/.test(repo)){setStatus($('imp'),'รูปแบบต้องเป็น owner/repo','er');return}
-  const br=$('gb').value.trim();setStatus($('imp'),'กำลังดึง '+repo+'…');
-  try{
-    const r=await fetch('https://api.github.com/repos/'+repo+'/zipball'+(br?'/'+encodeURIComponent(br):''));
-    if(!r.ok)throw new Error('HTTP '+r.status+(r.status===404?' (repo เป็น private หรือไม่พบ)':''));
-    await fromZip(await r.arrayBuffer(),repo.split('/')[1]);
-  }catch(x){setStatus($('imp'),'ดึงจาก GitHub ไม่ได้ในหน้านี้ ('+x.message+')<br>วิธีแก้: ใน GitHub กด Code → Download ZIP แล้วนำเข้าด้วยปุ่ม “ไฟล์ ZIP”','er')}};
+                <button id="btn-build" onclick="startBuildProcess()" class="w-full mt-6 bg-brand-600 hover:bg-brand-500 text-white font-semibold py-3 rounded-xl shadow-lg shadow-brand-500/20 transition-all active:scale-95 flex items-center justify-center gap-2">
+                    <i class="ph ph-hammer"></i>
+                    สร้าง APK (Build Now)
+                </button>
+            </div>
+        </div>
 
-const EXTRACT=['      - name: Extract project zip','        run: |','          shopt -s nullglob','          for z in *.zip; do echo "Extracting $z"; unzip -oq "$z" -d _src; done'];
-const ON=['on:','  workflow_dispatch:','  push:','    paths: ["*.zip"]'];
-function gradleWf(){
-  const g=$('gk').checked,vn=($('vn').value||'1.0').replace(/[^\w.-]/g,''),vc=($('vc').value||'1').replace(/\D/g,'')||'1',id=($('ap').value||'').replace(/[^\w.]/g,'');
-  const S='${{ secrets.GEMINI_API_KEY }}';
-  const L=['name: Build APK',...ON,'jobs:','  apk:','    runs-on: ubuntu-24.04','    steps:',
-  '      - uses: actions/checkout@v5',...EXTRACT,
-  '      - uses: actions/setup-java@v5','        with:','          distribution: temurin','          java-version: 21',
-  '      - uses: gradle/actions/setup-gradle@v5','        with:','          gradle-version: '+(gradleVer||'current'),
-  '      - name: Locate project','        run: |',
-  '          F=$(find . -name "settings.gradle*" -not -path "./.git/*" | head -n 1)',
-  '          if [ -z "$F" ]; then echo "::error::settings.gradle not found. Upload the project zip to the repo root."; ls -la; exit 1; fi',
-  '          echo "P=$(dirname "$F")" >> "$GITHUB_ENV"; echo "Project dir: $(dirname "$F")"',
-  '      - name: Accept SDK licenses','        run: |','          yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses > /dev/null || true',
-  '      - name: Install SDK platform','        run: |',
-  '          cd "$P"',
-  '          V=$(grep -hoE "release\\(([0-9]+)\\)" app/build.gradle* | grep -oE "[0-9]+" | head -n 1)',
-  '          M=$(grep -hoE "minorApiLevel = [0-9]+" app/build.gradle* | grep -oE "[0-9]+$" | head -n 1)',
-  '          SM="$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager"',
-  '          if [ -n "$V" ]; then if [ -n "$M" ] && [ "$M" != "0" ]; then "$SM" "platforms;android-$V.$M" || true; fi; "$SM" "platforms;android-$V" || true; fi',
-  '      - name: Prepare','        run: |','          cd "$P"',
-  '          if [ -n "$KEYSTORE_B64" ]; then echo "$KEYSTORE_B64" | base64 -d > debug.keystore; fi',
-  '          [ -f debug.keystore ] || keytool -genkeypair -keystore debug.keystore -storepass android -alias androiddebugkey -keypass android -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=Android Debug,O=Android,C=US"',
-  "          sed -i -E 's/versionCode = [0-9]+/versionCode = "+vc+"/; s/versionName = \".*\"/versionName = \""+vn+"\"/; s/applicationId = \".*\"/applicationId = \""+id+"\"/' app/build.gradle.kts"];
-  if(g)L.push('          if [ -n "$GEMINI_API_KEY" ]; then echo "GEMINI_API_KEY=$GEMINI_API_KEY" > .env; fi','        env:','          GEMINI_API_KEY: '+S,'          KEYSTORE_B64: ${{ secrets.KEYSTORE_B64 }}');
-  else L.push('        env:','          KEYSTORE_B64: ${{ secrets.KEYSTORE_B64 }}');
-  L.push('      - name: Build debug APK','        run: |','          cd "$P"',
-  '          if [ -f gradlew ] && [ -f gradle/wrapper/gradle-wrapper.jar ]; then chmod +x gradlew; ./gradlew assembleDebug --no-daemon --stacktrace; else gradle assembleDebug --no-daemon --stacktrace; fi',
-  '      - uses: actions/upload-artifact@v4','        with:','          name: app-debug-apk','          path: "**/build/outputs/apk/debug/*.apk"',
-  '      - uses: actions/upload-artifact@v4','        if: failure()','        with:','          name: build-reports','          path: "**/build/reports/**"','          if-no-files-found: ignore');
-  return L.join('\n')+'\n';
-}
-function workflow(){
-  if(mode==='gradle')return gradleWf();
-  const g=$('gk').checked,bc=$('bc').value||'npm run build',od=($('od').value||'dist').replace(/[^\w./-]/g,'');
-  const vn=$('vn').value||'1.0.0',vc=$('vc').value||'1';
-  const q=x=>String(x).replace(/['"\\$`]/g,' ');
-  const cfg=JSON.stringify({appId:$('ap').value,appName:q($('an').value),webDir:od,server:{androidScheme:'https'}});
-  const S='${{ secrets.GEMINI_API_KEY }}';
-  const L=['name: Build APK',...ON,'jobs:','  apk:','    runs-on: ubuntu-24.04','    steps:',
-  '      - uses: actions/checkout@v5',...EXTRACT,
-  '      - uses: actions/setup-node@v5','        with:','          node-version: 22',
-  '      - uses: actions/setup-java@v5','        with:','          distribution: temurin','          java-version: 21',
-  '      - name: Locate project','        run: |',
-  "          F=$(find . -name package.json -not -path '*/node_modules/*' | head -n 1)",
-  '          if [ -z "$F" ]; then echo "::error::package.json not found. Upload the project files (not a nested zip)."; ls -la; exit 1; fi',
-  '          echo "P=$(dirname "$F")" >> "$GITHUB_ENV"; echo "Project dir: $(dirname "$F")"',
-  '      - name: Install','        run: cd "$P" && npm install',
-  '      - name: Build web','        run: cd "$P" && '+bc+' -- --base=./'];
-  if(g)L.push('        env:','          GEMINI_API_KEY: '+S);
-  L.push('      - name: Add Capacitor Android','        run: |','          cd "$P"',
-  "          echo '"+cfg+"' > capacitor.config.json",
-  '          npm install @capacitor/core@7 @capacitor/cli@7 @capacitor/android@7 --no-save',
-  '          ls -la '+od,
-  '          npx cap add android','          npx cap sync android',
-  '          sed -i "s/versionCode 1/versionCode '+vc+'/; s/versionName \\"1.0\\"/versionName \\"'+vn+'\\"/" android/app/build.gradle',
-  '      - name: Assemble APK','        run: cd "$P/android" && chmod +x gradlew && ./gradlew assembleDebug --no-daemon',
-  '      - uses: actions/upload-artifact@v4','        with:','          name: app-debug-apk','          path: "**/app-debug.apk"');
-  return L.join('\n')+'\n';
-}
-function capcfg(){return JSON.stringify({appId:$('ap').value,appName:$('an').value,webDir:$('od').value||'dist',server:{androidScheme:'https'}},null,2)}
-function refresh(){$('wf').textContent=workflow()}
-['an','ap','vn','vc','bc','od','gk'].forEach(i=>$(i).addEventListener('input',refresh));refresh();
+        <!-- Right Panel: Terminal/Console -->
+        <div class="lg:col-span-7 flex flex-col h-[500px] lg:h-auto glass-panel rounded-2xl shadow-xl overflow-hidden border border-dark-700">
+            <!-- Terminal Header -->
+            <div class="bg-dark-900 px-4 py-2 flex items-center justify-between border-b border-dark-700">
+                <div class="flex items-center gap-2">
+                    <i class="ph ph-terminal-window text-slate-400"></i>
+                    <span class="text-sm font-mono text-slate-300">build_console ~ /workspace</span>
+                </div>
+                <div class="flex gap-1.5">
+                    <div class="w-3 h-3 rounded-full bg-red-500/80"></div>
+                    <div class="w-3 h-3 rounded-full bg-yellow-500/80"></div>
+                    <div class="w-3 h-3 rounded-full bg-green-500/80"></div>
+                </div>
+            </div>
+            
+            <!-- Terminal Output Area -->
+            <div id="terminal-output" class="flex-grow bg-[#0a0f18] p-4 font-mono text-sm overflow-y-auto terminal-scroll text-slate-300">
+                <div class="text-brand-500 font-bold mb-2">IDOL_CHAMP Build Engine v3.1.0</div>
+                <div class="text-slate-500 mb-4">System ready. Waiting for project input...</div>
+                <!-- Console logs will be injected here -->
+            </div>
 
-async function save(name,data){
-  try{
-    const d=(typeof claude!=='undefined'&&claude.use)?await claude.use('downloads'):null;
-    if(d){await d.save({filename:name,data});return true}
-    const blob=data instanceof Blob?data:new Blob([data]);
-    const u=URL.createObjectURL(blob),a=document.createElement('a');a.href=u;a.download=name;document.body.appendChild(a);a.click();a.remove();
-    setStatus($('gs'),'หน้านี้ไม่รองรับการดาวน์โหลดโดยตรง — เปิดแอปนี้จากลิงก์ที่เผยแพร่ (ปุ่ม Open ในการ์ด) แทนการดูในแชท หรือใช้ปุ่ม “คัดลอก Workflow” ด้านล่างแทนการโหลด Kit','er');
-    return false;
-  }catch(e){if(e&&e.code==='declined')return false;setStatus($('gs'),'บันทึกไม่สำเร็จ: '+(e&&e.message||e),'er');return false}
-}
-$('go').onclick=async()=>{
-  if(!/^[a-z][a-z0-9_]*(\.[a-z][a-z0-9_]*)+$/.test($('ap').value)){setStatus($('gs'),'Package ID ไม่ถูกต้อง (เช่น com.idolchamp.myapp)','er');return}
-  $('go').disabled=true;setStatus($('gs'),'กำลังรวมไฟล์…');
-  try{
-    const z=new JSZip();
-    for(const f of files)z.file(f.path,await f.get(),{binary:true});
-    z.file('.github/workflows/build-apk.yml',workflow());
-    if(mode==='web')z.file('capacitor.config.json',capcfg());
-    z.file('BUILD_APK_README.txt','Build APK By IDOL_CHAMP\nอัปโหลดไฟล์ทั้งหมดขึ้น GitHub แล้วรัน Actions > Build APK\nเพิ่ม Secret: GEMINI_API_KEY (ถ้าแอปใช้ Gemini)\n');
-    const blob=await z.generateAsync({type:'blob',compression:'DEFLATE',compressionOptions:{level:6}},m=>{$('pb').style.width=m.percent.toFixed(0)+'%'});
-    kit=blob;$('pb').style.width='100%';
-    setStatus($('gs'),'เสร็จแล้ว · '+(blob.size/1048576).toFixed(2)+' MB','ok');
-    $('dl').classList.remove('hide');
-    await save(slug($('an').value)+'-build-kit.zip',blob);
-  }catch(x){setStatus($('gs'),'ผิดพลาด: '+x.message,'er')}
-  $('go').disabled=false;
-};
-$('dl').onclick=()=>kit&&save(slug($('an').value)+'-build-kit.zip',kit);
-$('dw').onclick=()=>save('build-apk-workflow.txt',workflow());
-$('cp').onclick=async()=>{
-  try{await navigator.clipboard.writeText(workflow());$('cp').textContent='✅ คัดลอกแล้ว'}
-  catch(e){const r=document.createRange();r.selectNodeContents($('wf'));const s=getSelection();s.removeAllRanges();s.addRange(r);$('cp').textContent='แตะค้างเพื่อคัดลอก'}
-  setTimeout(()=>$('cp').textContent='📋 คัดลอก Workflow',2500)};
-})();
-</script>
+            <!-- Download Action Area (Hidden initially) -->
+            <div id="download-area" class="hidden bg-dark-800 p-4 border-t border-dark-700 flex flex-col sm:flex-row items-center justify-between gap-4 animate-fade-in">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-full bg-brand-accent/20 flex items-center justify-center">
+                        <i class="ph ph-check-circle text-brand-accent text-2xl"></i>
+                    </div>
+                    <div>
+                        <p class="font-semibold text-white">Build สำเร็จ!</p>
+                        <p class="text-xs text-slate-400">app-release-unsigned.apk พร้อมใช้งาน</p>
+                    </div>
+                </div>
+                <button onclick="downloadApk()" class="w-full sm:w-auto bg-brand-accent hover:bg-emerald-400 text-dark-900 font-bold py-2 px-6 rounded-lg shadow-lg transition-colors flex items-center justify-center gap-2">
+                    <i class="ph ph-download-simple font-bold"></i>
+                    ดาวน์โหลด APK
+                </button>
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        let currentTab = 'zip';
+        let selectedFile = null;
+        let isBuilding = false;
+
+        // Tab Switching Logic
+        function switchTab(tab) {
+            if (isBuilding) return; // Prevent switching during build
+            
+            currentTab = tab;
+            
+            // Update Tab UI
+            document.getElementById('tab-zip').className = tab === 'zip' 
+                ? 'flex-1 py-2 text-sm font-medium rounded-md bg-dark-700 text-white shadow transition-all duration-200' 
+                : 'flex-1 py-2 text-sm font-medium rounded-md text-slate-400 hover:text-white transition-all duration-200';
+                
+            document.getElementById('tab-github').className = tab === 'github' 
+                ? 'flex-1 py-2 text-sm font-medium rounded-md bg-dark-700 text-white shadow transition-all duration-200' 
+                : 'flex-1 py-2 text-sm font-medium rounded-md text-slate-400 hover:text-white transition-all duration-200';
+
+            // Update Content Visibility
+            document.getElementById('content-zip').style.display = tab === 'zip' ? 'block' : 'none';
+            document.getElementById('content-github').style.display = tab === 'github' ? 'block' : 'none';
+        }
+
+        // File Selection Logic
+        function handleFileSelect(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            if (file.name.endsWith('.zip')) {
+                selectedFile = file;
+                document.getElementById('drop-zone').classList.add('hidden');
+                document.getElementById('file-info').classList.remove('hidden');
+                document.getElementById('file-name').textContent = file.name;
+                document.getElementById('file-size').textContent = formatBytes(file.size);
+                
+                logToTerminal(`[INFO] Loaded local file: ${file.name} (${formatBytes(file.size)})`, 'text-blue-400');
+            } else {
+                alert('กรุณาเลือกไฟล์ .zip เท่านั้น');
+                event.target.value = '';
+            }
+        }
+
+        function clearFile() {
+            selectedFile = null;
+            document.getElementById('file-input').value = '';
+            document.getElementById('drop-zone').classList.remove('hidden');
+            document.getElementById('file-info').classList.add('hidden');
+            logToTerminal(`[INFO] Cleared selection.`, 'text-yellow-400');
+        }
+
+        function formatBytes(bytes, decimals = 2) {
+            if (!+bytes) return '0 Bytes';
+            const k = 1024;
+            const dm = decimals < 0 ? 0 : decimals;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`;
+        }
+
+        // Terminal Logging Logic
+        function logToTerminal(message, colorClass = 'text-slate-300', isProgress = false) {
+            const terminal = document.getElementById('terminal-output');
+            
+            // Remove previous cursor if exists
+            const cursor = document.getElementById('terminal-cursor');
+            if (cursor) cursor.remove();
+
+            const line = document.createElement('div');
+            line.className = `font-mono mt-1 ${colorClass}`;
+            
+            const time = new Date().toLocaleTimeString('en-US', { hour12: false });
+            line.innerHTML = `<span class="text-slate-600">[${time}]</span> ${message}`;
+            
+            terminal.appendChild(line);
+
+            // Add cursor back
+            const newCursor = document.createElement('div');
+            newCursor.id = 'terminal-cursor';
+            newCursor.className = 'inline-block w-2 h-4 bg-slate-400 ml-1 cursor-blink align-middle mt-1';
+            terminal.appendChild(newCursor);
+
+            terminal.scrollTop = terminal.scrollHeight;
+        }
+
+        async function startBuildProcess() {
+            if (isBuilding) return;
+
+            // Validation
+            if (currentTab === 'zip' && !selectedFile) {
+                logToTerminal(`[ERROR] Please select a ZIP file first.`, 'text-red-400');
+                return;
+            }
+            if (currentTab === 'github') {
+                const url = document.getElementById('github-url').value;
+                if (!url || !url.includes('github.com')) {
+                    logToTerminal(`[ERROR] Invalid GitHub URL.`, 'text-red-400');
+                    return;
+                }
+            }
+
+            isBuilding = true;
+            document.getElementById('btn-build').disabled = true;
+            document.getElementById('btn-build').innerHTML = `<i class="ph ph-spinner animate-spin"></i> กำลังสร้าง...`;
+            document.getElementById('btn-build').classList.replace('bg-brand-600', 'bg-dark-700');
+            document.getElementById('download-area').classList.add('hidden');
+
+            const appName = document.getElementById('app-name').value;
+            const pkgName = document.getElementById('pkg-name').value;
+
+            // Clear terminal
+            document.getElementById('terminal-output').innerHTML = '';
+            
+            logToTerminal(`--- IDOL_CHAMP APK BUILDER STARTED ---`, 'text-brand-500 font-bold');
+            logToTerminal(`App Name: ${appName}`);
+            logToTerminal(`Package Name: ${pkgName}`);
+            logToTerminal(`Target Device Profile: Xiaomi 13 Pro / Android 16`);
+            await sleep(800);
+
+            try {
+                if (currentTab === 'zip') {
+                    logToTerminal(`[STEP 1] Packing project assets...`, 'text-yellow-400');
+                    await sleep(500);
+                    
+                    // เตรียมข้อมูลส่งให้ Backend
+                    const formData = new FormData();
+                    formData.append('projectZip', selectedFile);
+                    formData.append('appName', appName);
+                    formData.append('pkgName', pkgName);
+
+                    const apiUrl = document.getElementById('api-url').value.replace(/\/$/, ""); // ตัด slash ตัวท้ายออกถ้ามี
+
+                    logToTerminal(`[STEP 2] Uploading to Backend Server (${apiUrl})...`, 'text-yellow-400');
+                    logToTerminal(`[INFO] Server is compiling Android Source Code. This may take 2-5 minutes on Cloud...`, 'text-slate-400');
+                    
+                    // เรียก API ไปยัง Backend (Local หรือ Cloud)
+                    const response = await fetch(`${apiUrl}/api/build`, {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    if (!response.ok) {
+                        const err = await response.json();
+                        throw new Error(err.error || 'Server responded with an error');
+                    }
+
+                    logToTerminal(`BUILD SUCCESSFUL`, 'text-brand-accent font-bold mt-2');
+                    await sleep(500);
+                    
+                    logToTerminal(`[STEP 3] Receiving APK file from server...`, 'text-yellow-400');
+                    
+                    // รับไฟล์ APK (Blob) กลับมาจาก Server
+                    const apkBlob = await response.blob();
+                    
+                    // นำ Blob เก็บไว้ในตัวแปร Global เพื่อให้ปุ่มดาวน์โหลดเรียกใช้งาน
+                    window.generatedApkBlob = apkBlob;
+                    window.generatedApkName = `${appName.replace(/\s+/g, '_')}.apk`;
+                    
+                    logToTerminal(`--- PROCESS COMPLETED ---`, 'text-brand-500 font-bold mt-4');
+                    logToTerminal(`Output: ${window.generatedApkName} ready for download.`, 'text-brand-accent');
+
+                    // Show download UI
+                    document.getElementById('download-area').classList.remove('hidden');
+
+                } else {
+                    // ส่วนของ GitHub สามารถพัฒนาต่อยอดใน Backend โดยใช้ git clone แทน multer ได้
+                    logToTerminal(`[ERROR] GitHub integration requires Backend configuration update.`, 'text-red-400');
+                    throw new Error("GitHub logic not fully implemented in current backend scope.");
+                }
+
+            } catch (error) {
+                logToTerminal(`[FATAL ERROR] Build failed: ${error.message}`, 'text-red-500');
+            } finally {
+                isBuilding = false;
+                document.getElementById('btn-build').disabled = false;
+                document.getElementById('btn-build').innerHTML = `<i class="ph ph-hammer"></i> สร้าง APK (Build Now)`;
+                document.getElementById('btn-build').classList.replace('bg-dark-700', 'bg-brand-600');
+            }
+        }
+
+        // Helper for delay
+        function sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+
+        // Updated Download Function (ดาวน์โหลดไฟล์ที่ได้จากเซิร์ฟเวอร์จริงๆ)
+        function downloadApk() {
+            if (!window.generatedApkBlob) {
+                logToTerminal(`[ERROR] No APK file available to download.`, 'text-red-500');
+                return;
+            }
+            
+            const url = URL.createObjectURL(window.generatedApkBlob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = window.generatedApkName; 
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            logToTerminal(`[INFO] Downloading actual APK: ${window.generatedApkName}`, 'text-brand-500');
+        }
+
+        // Drag and drop event listeners
+        const dropZone = document.getElementById('drop-zone');
+        
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, preventDefaults, false);
+        });
+
+        function preventDefaults (e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropZone.addEventListener(eventName, highlight, false);
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, unhighlight, false);
+        });
+
+        function highlight(e) {
+            dropZone.classList.add('border-brand-500', 'bg-dark-800');
+        }
+
+        function unhighlight(e) {
+            dropZone.classList.remove('border-brand-500', 'bg-dark-800');
+        }
+
+        dropZone.addEventListener('drop', handleDrop, false);
+
+        function handleDrop(e) {
+            let dt = e.dataTransfer;
+            let files = dt.files;
+            
+            // Mock file input event
+            const event = { target: { files: files } };
+            handleFileSelect(event);
+        }
+
+    </script>
 </body>
 </html>

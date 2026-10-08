@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Build APK By IDOL_CHAMP</title>
+    <!-- Web ICON -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22><rect width=%2224%22 height=%2224%22 fill=%22%233b82f6%22 rx=%226%22/><path d=%22M12 2L22 7.5V16.5L12 22L2 16.5V7.5L12 2Z%22 stroke=%22white%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22/><path d=%22M12 22V12%22 stroke=%22white%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22/><path d=%22M22 7.5L12 12L2 7.5%22 stroke=%22white%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22/><path d=%22M17 4.5L7 10%22 stroke=%22white%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22/></svg>">
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Phosphor Icons -->
@@ -184,6 +186,17 @@
                     <i class="ph ph-hammer"></i>
                     สร้าง APK (Build Now)
                 </button>
+
+                <!-- Progress Bar Container (Hidden initially) -->
+                <div id="progress-container" class="hidden mt-6 bg-dark-900 rounded-lg p-4 border border-dark-700">
+                    <div class="flex justify-between items-center mb-2">
+                        <span id="progress-step-text" class="text-xs font-medium text-brand-400">กำลังเตรียมระบบ...</span>
+                        <span id="progress-text" class="text-xs font-bold text-white">0%</span>
+                    </div>
+                    <div class="w-full bg-dark-700 rounded-full h-2.5 overflow-hidden">
+                        <div id="progress-bar" class="bg-gradient-to-r from-brand-500 to-brand-accent h-2.5 rounded-full transition-all duration-300" style="width: 0%"></div>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -231,6 +244,22 @@
     <script>
         let selectedFile = null;
         let isBuilding = false;
+        let progressInterval;
+        let currentProgress = 0;
+
+        function updateProgress(target, speed, stepText) {
+            if(stepText) document.getElementById('progress-step-text').textContent = stepText;
+            clearInterval(progressInterval);
+            progressInterval = setInterval(() => {
+                if (currentProgress < target) {
+                    currentProgress++;
+                    document.getElementById('progress-bar').style.width = `${currentProgress}%`;
+                    document.getElementById('progress-text').textContent = `${currentProgress}%`;
+                } else {
+                    clearInterval(progressInterval);
+                }
+            }, speed);
+        }
 
         // File Selection Logic
         function handleFileSelect(event) {
@@ -300,20 +329,28 @@
             }
 
             isBuilding = true;
+            currentProgress = 0;
             document.getElementById('btn-build').disabled = true;
             document.getElementById('btn-build').innerHTML = `<i class="ph ph-spinner animate-spin"></i> กำลังสร้าง...`;
             document.getElementById('btn-build').classList.replace('bg-brand-600', 'bg-dark-700');
             document.getElementById('download-area').classList.add('hidden');
+            
+            // รีเซ็ตและแสดง Progress Bar
+            document.getElementById('progress-container').classList.remove('hidden');
+            document.getElementById('progress-bar').className = 'bg-gradient-to-r from-brand-500 to-brand-accent h-2.5 rounded-full transition-all duration-300';
+            document.getElementById('progress-step-text').className = 'text-xs font-medium text-brand-400';
+            updateProgress(5, 50, "กำลังตรวจสอบไฟล์ ZIP...");
 
             document.getElementById('terminal-output').innerHTML = '';
             
             logToTerminal(`--- IDOL_CHAMP APK BUILDER STARTED ---`, 'text-brand-500 font-bold');
             logToTerminal(`Target Device Profile: Xiaomi 13 Pro / Android 16`);
-            logToTerminal(`Mode: Native Local Build (Preserving AI Studio Data)`);
+            logToTerminal(`Mode: High-Speed Native Build`);
             await sleep(800);
 
             try {
                 logToTerminal(`[STEP 1] Packing project assets...`, 'text-yellow-400');
+                updateProgress(15, 100, "กำลังส่งไฟล์ให้เครื่องประมวลผล...");
                 await sleep(500);
                 
                 const formData = new FormData();
@@ -324,6 +361,8 @@
                 logToTerminal(`[STEP 2] Sending to Local Backend Server (${apiUrl})...`, 'text-yellow-400');
                 logToTerminal(`[INFO] Gradle is compiling Android Source Code. Please wait...`, 'text-slate-400');
                 
+                updateProgress(90, 800, "🚀 ระบบกำลัง Compile ด้วยความเร็วสูง (High-Speed Mode)...");
+                
                 const response = await fetch(`${apiUrl}/api/build`, {
                     method: 'POST',
                     body: formData
@@ -333,6 +372,13 @@
                     const err = await response.json();
                     throw new Error(err.error || 'Server responded with an error');
                 }
+
+                clearInterval(progressInterval);
+                currentProgress = 100;
+                document.getElementById('progress-bar').style.width = `100%`;
+                document.getElementById('progress-text').textContent = `100%`;
+                document.getElementById('progress-step-text').textContent = "สร้าง APK สำเร็จ! ระบบปิด Backend ให้อัตโนมัติแล้ว";
+                document.getElementById('progress-step-text').classList.replace('text-brand-400', 'text-brand-accent');
 
                 logToTerminal(`BUILD SUCCESSFUL`, 'text-brand-accent font-bold mt-2');
                 await sleep(500);
@@ -357,11 +403,19 @@
                 
                 logToTerminal(`--- PROCESS COMPLETED ---`, 'text-brand-500 font-bold mt-4');
                 logToTerminal(`Output: ${window.generatedApkName} ready for download.`, 'text-brand-accent');
+                logToTerminal(`[INFO] Backend ถูกสั่งปิดโดยอัตโนมัติแล้วเพื่อคืน RAM ให้เครื่อง`, 'text-slate-400');
 
                 document.getElementById('download-area').classList.remove('hidden');
 
             } catch (error) {
+                clearInterval(progressInterval);
+                document.getElementById('progress-step-text').textContent = "เกิดข้อผิดพลาด!";
+                document.getElementById('progress-step-text').classList.replace('text-brand-400', 'text-red-400');
+                document.getElementById('progress-bar').classList.replace('from-brand-500', 'from-red-500');
+                document.getElementById('progress-bar').classList.replace('to-brand-accent', 'to-red-600');
+                
                 logToTerminal(`[FATAL ERROR] Build failed: ${error.message}`, 'text-red-500');
+                logToTerminal(`[INFO] Backend ถูกสั่งปิดโดยอัตโนมัติแล้ว`, 'text-slate-400');
             } finally {
                 isBuilding = false;
                 document.getElementById('btn-build').disabled = false;

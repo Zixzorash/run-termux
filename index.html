@@ -107,8 +107,8 @@
                     <span>Optimized for Android</span>
                 </div>
                 <div class="flex items-center gap-1">
-                    <i class="ph ph-cpu text-lg"></i>
-                    <span>Cloud Engine</span>
+                    <i class="ph ph-hard-drives text-lg"></i>
+                    <span>Local / Cloud Engine</span>
                 </div>
             </div>
         </div>
@@ -126,17 +126,6 @@
                     เลือกแหล่งข้อมูลโปรเจกต์
                 </h2>
                 
-                <!-- Tabs -->
-                <div class="flex bg-dark-900 rounded-lg p-1 mb-5" role="tablist">
-                    <button id="tab-zip" onclick="switchTab('zip')" class="flex-1 py-2 text-sm font-medium rounded-md bg-dark-700 text-white shadow transition-all duration-200">
-                        ไฟล์ ZIP / โฟลเดอร์
-                    </button>
-                    <button id="tab-github" onclick="switchTab('github')" class="flex-1 py-2 text-sm font-medium rounded-md text-slate-400 hover:text-white transition-all duration-200">
-                        GitHub Repository
-                    </button>
-                </div>
-
-                <!-- Tab Content: ZIP / Folder -->
                 <div id="content-zip" class="block animate-fade-in">
                     <div id="drop-zone" class="border-2 border-dashed border-dark-700 hover:border-brand-500 bg-dark-900/50 rounded-xl p-8 text-center transition-colors duration-300 cursor-pointer relative overflow-hidden group">
                         <input type="file" id="file-input" accept=".zip" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" onchange="handleFileSelect(event)">
@@ -146,8 +135,8 @@
                                 <i class="ph ph-file-zip text-3xl text-brand-500"></i>
                             </div>
                             <div>
-                                <p class="font-medium text-slate-200">แตะเพื่อเลือกไฟล์ หรือ ลากไฟล์มาวาง</p>
-                                <p class="text-xs text-slate-400 mt-1">รองรับไฟล์ .zip จาก Google AI Studio (สูงสุด 50MB)</p>
+                                <p class="font-medium text-slate-200">แตะเพื่อเลือกไฟล์ Zip โปรเจกต์</p>
+                                <p class="text-xs text-slate-400 mt-1">รองรับ Native Android จาก Google AI Studio</p>
                             </div>
                         </div>
                     </div>
@@ -165,45 +154,29 @@
                         </button>
                     </div>
                 </div>
-
-                <!-- Tab Content: GitHub -->
-                <div id="content-github" class="hidden animate-fade-in">
-                    <div class="flex flex-col gap-3">
-                        <label class="text-sm text-slate-300">URL ของ GitHub Repository</label>
-                        <div class="relative">
-                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <i class="ph ph-github-logo text-slate-400 text-lg"></i>
-                            </div>
-                            <input type="url" id="github-url" placeholder="https://github.com/username/repo" class="w-full bg-dark-900 border border-dark-700 text-white rounded-lg pl-10 pr-4 py-3 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent transition-all placeholder-slate-600">
-                        </div>
-                        <p class="text-xs text-slate-400">ระบบจะทำการ Clone และ Build แบบอัตโนมัติ</p>
-                    </div>
-                </div>
             </div>
 
             <!-- Configuration Panel -->
             <div class="glass-panel rounded-2xl p-5 shadow-xl">
                 <h2 class="text-lg font-semibold mb-4 flex items-center gap-2">
                     <i class="ph ph-sliders text-brand-500 text-xl"></i>
-                    ตั้งค่าแอปพลิเคชัน
+                    การตั้งค่า
                 </h2>
                 
                 <div class="space-y-4">
                     <div>
-                        <label class="block text-xs font-medium text-slate-400 mb-1">Backend Server URL (Cloud/Local)</label>
-                        <input type="url" id="api-url" value="http://localhost:3000" placeholder="https://your-cloud-app.onrender.com" class="w-full bg-dark-900 border border-dark-700 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-brand-500 outline-none font-mono text-brand-400">
+                        <label class="block text-xs font-medium text-slate-400 mb-1">Backend Server URL</label>
+                        <input type="url" id="api-url" value="http://localhost:3000" placeholder="http://192.168.1.x:3000" class="w-full bg-dark-900 border border-dark-700 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-brand-500 outline-none font-mono text-brand-400">
+                        <p class="text-[10px] text-slate-500 mt-1">* ใส่ URL ของ Local Server หรือ Cloud ที่คุณรัน Backend ไว้</p>
                     </div>
-                    <div>
-                        <label class="block text-xs font-medium text-slate-400 mb-1">ชื่อแอป (App Name)</label>
-                        <input type="text" id="app-name" value="My AI App" class="w-full bg-dark-900 border border-dark-700 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-brand-500 outline-none">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-medium text-slate-400 mb-1">แพ็กเกจ (Package Name)</label>
-                        <input type="text" id="pkg-name" value="com.idolchamp.aiapp" class="w-full bg-dark-900 border border-dark-700 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-brand-500 outline-none">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-medium text-slate-400 mb-1">ไอคอนแอป (เลือกไฟล์ .png)</label>
-                        <input type="file" accept="image/png" class="w-full text-sm text-slate-400 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-dark-700 file:text-white hover:file:bg-dark-600 cursor-pointer">
+
+                    <!-- แจ้งผู้ใช้ว่าแอปจะดึงข้อมูลจาก Zip โดยตรง -->
+                    <div class="bg-dark-900/80 border border-brand-500/30 rounded-lg p-3 flex gap-3 mt-4">
+                        <i class="ph ph-info text-brand-500 text-lg"></i>
+                        <div>
+                            <p class="text-xs font-medium text-slate-200">รักษาค่าดั้งเดิมจาก AI Studio (Original Metadata)</p>
+                            <p class="text-[10px] text-slate-400 mt-1">ระบบ Backend จะไม่มีการเปลี่ยนแปลง ชื่อแอปพลิเคชัน (App Name), แพ็กเกจ (Package), และไอคอนแอป (Icon) เพื่อให้ไฟล์ APK ที่ได้เหมือนกับต้นฉบับที่คุณตั้งค่าไว้ใน AI Studio 100%</p>
+                        </div>
                     </div>
                 </div>
 
@@ -231,9 +204,8 @@
             
             <!-- Terminal Output Area -->
             <div id="terminal-output" class="flex-grow bg-[#0a0f18] p-4 font-mono text-sm overflow-y-auto terminal-scroll text-slate-300">
-                <div class="text-brand-500 font-bold mb-2">IDOL_CHAMP Build Engine v3.1.0</div>
+                <div class="text-brand-500 font-bold mb-2">IDOL_CHAMP Build Engine (Local Edition)</div>
                 <div class="text-slate-500 mb-4">System ready. Waiting for project input...</div>
-                <!-- Console logs will be injected here -->
             </div>
 
             <!-- Download Action Area (Hidden initially) -->
@@ -244,7 +216,7 @@
                     </div>
                     <div>
                         <p class="font-semibold text-white">Build สำเร็จ!</p>
-                        <p class="text-xs text-slate-400">app-release-unsigned.apk พร้อมใช้งาน</p>
+                        <p class="text-xs text-slate-400">ไฟล์ APK ของคุณพร้อมใช้งานแล้ว</p>
                     </div>
                 </div>
                 <button onclick="downloadApk()" class="w-full sm:w-auto bg-brand-accent hover:bg-emerald-400 text-dark-900 font-bold py-2 px-6 rounded-lg shadow-lg transition-colors flex items-center justify-center gap-2">
@@ -257,29 +229,8 @@
     </main>
 
     <script>
-        let currentTab = 'zip';
         let selectedFile = null;
         let isBuilding = false;
-
-        // Tab Switching Logic
-        function switchTab(tab) {
-            if (isBuilding) return; // Prevent switching during build
-            
-            currentTab = tab;
-            
-            // Update Tab UI
-            document.getElementById('tab-zip').className = tab === 'zip' 
-                ? 'flex-1 py-2 text-sm font-medium rounded-md bg-dark-700 text-white shadow transition-all duration-200' 
-                : 'flex-1 py-2 text-sm font-medium rounded-md text-slate-400 hover:text-white transition-all duration-200';
-                
-            document.getElementById('tab-github').className = tab === 'github' 
-                ? 'flex-1 py-2 text-sm font-medium rounded-md bg-dark-700 text-white shadow transition-all duration-200' 
-                : 'flex-1 py-2 text-sm font-medium rounded-md text-slate-400 hover:text-white transition-all duration-200';
-
-            // Update Content Visibility
-            document.getElementById('content-zip').style.display = tab === 'zip' ? 'block' : 'none';
-            document.getElementById('content-github').style.display = tab === 'github' ? 'block' : 'none';
-        }
 
         // File Selection Logic
         function handleFileSelect(event) {
@@ -318,10 +269,9 @@
         }
 
         // Terminal Logging Logic
-        function logToTerminal(message, colorClass = 'text-slate-300', isProgress = false) {
+        function logToTerminal(message, colorClass = 'text-slate-300') {
             const terminal = document.getElementById('terminal-output');
             
-            // Remove previous cursor if exists
             const cursor = document.getElementById('terminal-cursor');
             if (cursor) cursor.remove();
 
@@ -333,7 +283,6 @@
             
             terminal.appendChild(line);
 
-            // Add cursor back
             const newCursor = document.createElement('div');
             newCursor.id = 'terminal-cursor';
             newCursor.className = 'inline-block w-2 h-4 bg-slate-400 ml-1 cursor-blink align-middle mt-1';
@@ -345,17 +294,9 @@
         async function startBuildProcess() {
             if (isBuilding) return;
 
-            // Validation
-            if (currentTab === 'zip' && !selectedFile) {
+            if (!selectedFile) {
                 logToTerminal(`[ERROR] Please select a ZIP file first.`, 'text-red-400');
                 return;
-            }
-            if (currentTab === 'github') {
-                const url = document.getElementById('github-url').value;
-                if (!url || !url.includes('github.com')) {
-                    logToTerminal(`[ERROR] Invalid GitHub URL.`, 'text-red-400');
-                    return;
-                }
             }
 
             isBuilding = true;
@@ -364,68 +305,60 @@
             document.getElementById('btn-build').classList.replace('bg-brand-600', 'bg-dark-700');
             document.getElementById('download-area').classList.add('hidden');
 
-            const appName = document.getElementById('app-name').value;
-            const pkgName = document.getElementById('pkg-name').value;
-
-            // Clear terminal
             document.getElementById('terminal-output').innerHTML = '';
             
             logToTerminal(`--- IDOL_CHAMP APK BUILDER STARTED ---`, 'text-brand-500 font-bold');
-            logToTerminal(`App Name: ${appName}`);
-            logToTerminal(`Package Name: ${pkgName}`);
             logToTerminal(`Target Device Profile: Xiaomi 13 Pro / Android 16`);
+            logToTerminal(`Mode: Native Local Build (Preserving AI Studio Data)`);
             await sleep(800);
 
             try {
-                if (currentTab === 'zip') {
-                    logToTerminal(`[STEP 1] Packing project assets...`, 'text-yellow-400');
-                    await sleep(500);
-                    
-                    // เตรียมข้อมูลส่งให้ Backend
-                    const formData = new FormData();
-                    formData.append('projectZip', selectedFile);
-                    formData.append('appName', appName);
-                    formData.append('pkgName', pkgName);
+                logToTerminal(`[STEP 1] Packing project assets...`, 'text-yellow-400');
+                await sleep(500);
+                
+                const formData = new FormData();
+                formData.append('projectZip', selectedFile);
 
-                    const apiUrl = document.getElementById('api-url').value.replace(/\/$/, ""); // ตัด slash ตัวท้ายออกถ้ามี
+                const apiUrl = document.getElementById('api-url').value.replace(/\/$/, ""); 
 
-                    logToTerminal(`[STEP 2] Uploading to Backend Server (${apiUrl})...`, 'text-yellow-400');
-                    logToTerminal(`[INFO] Server is compiling Android Source Code. This may take 2-5 minutes on Cloud...`, 'text-slate-400');
-                    
-                    // เรียก API ไปยัง Backend (Local หรือ Cloud)
-                    const response = await fetch(`${apiUrl}/api/build`, {
-                        method: 'POST',
-                        body: formData
-                    });
+                logToTerminal(`[STEP 2] Sending to Local Backend Server (${apiUrl})...`, 'text-yellow-400');
+                logToTerminal(`[INFO] Gradle is compiling Android Source Code. Please wait...`, 'text-slate-400');
+                
+                const response = await fetch(`${apiUrl}/api/build`, {
+                    method: 'POST',
+                    body: formData
+                });
 
-                    if (!response.ok) {
-                        const err = await response.json();
-                        throw new Error(err.error || 'Server responded with an error');
-                    }
-
-                    logToTerminal(`BUILD SUCCESSFUL`, 'text-brand-accent font-bold mt-2');
-                    await sleep(500);
-                    
-                    logToTerminal(`[STEP 3] Receiving APK file from server...`, 'text-yellow-400');
-                    
-                    // รับไฟล์ APK (Blob) กลับมาจาก Server
-                    const apkBlob = await response.blob();
-                    
-                    // นำ Blob เก็บไว้ในตัวแปร Global เพื่อให้ปุ่มดาวน์โหลดเรียกใช้งาน
-                    window.generatedApkBlob = apkBlob;
-                    window.generatedApkName = `${appName.replace(/\s+/g, '_')}.apk`;
-                    
-                    logToTerminal(`--- PROCESS COMPLETED ---`, 'text-brand-500 font-bold mt-4');
-                    logToTerminal(`Output: ${window.generatedApkName} ready for download.`, 'text-brand-accent');
-
-                    // Show download UI
-                    document.getElementById('download-area').classList.remove('hidden');
-
-                } else {
-                    // ส่วนของ GitHub สามารถพัฒนาต่อยอดใน Backend โดยใช้ git clone แทน multer ได้
-                    logToTerminal(`[ERROR] GitHub integration requires Backend configuration update.`, 'text-red-400');
-                    throw new Error("GitHub logic not fully implemented in current backend scope.");
+                if (!response.ok) {
+                    const err = await response.json();
+                    throw new Error(err.error || 'Server responded with an error');
                 }
+
+                logToTerminal(`BUILD SUCCESSFUL`, 'text-brand-accent font-bold mt-2');
+                await sleep(500);
+                
+                logToTerminal(`[STEP 3] Receiving APK file from server...`, 'text-yellow-400');
+                
+                const apkBlob = await response.blob();
+                
+                // ดึงชื่อไฟล์จาก Header ที่ Backend ส่งมา ถ้าไม่มีให้ใช้ค่าเริ่มต้น
+                let filename = "AI_Studio_App.apk";
+                const disposition = response.headers.get('Content-Disposition');
+                if (disposition && disposition.indexOf('attachment') !== -1) {
+                    const filenameRegex = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
+                    const matches = filenameRegex.exec(disposition);
+                    if (matches != null && matches[1]) { 
+                        filename = matches[1].replace(/['"]/g, '');
+                    }
+                }
+
+                window.generatedApkBlob = apkBlob;
+                window.generatedApkName = filename;
+                
+                logToTerminal(`--- PROCESS COMPLETED ---`, 'text-brand-500 font-bold mt-4');
+                logToTerminal(`Output: ${window.generatedApkName} ready for download.`, 'text-brand-accent');
+
+                document.getElementById('download-area').classList.remove('hidden');
 
             } catch (error) {
                 logToTerminal(`[FATAL ERROR] Build failed: ${error.message}`, 'text-red-500');
@@ -437,12 +370,10 @@
             }
         }
 
-        // Helper for delay
         function sleep(ms) {
             return new Promise(resolve => setTimeout(resolve, ms));
         }
 
-        // Updated Download Function (ดาวน์โหลดไฟล์ที่ได้จากเซิร์ฟเวอร์จริงๆ)
         function downloadApk() {
             if (!window.generatedApkBlob) {
                 logToTerminal(`[ERROR] No APK file available to download.`, 'text-red-500');
@@ -461,7 +392,6 @@
             logToTerminal(`[INFO] Downloading actual APK: ${window.generatedApkName}`, 'text-brand-500');
         }
 
-        // Drag and drop event listeners
         const dropZone = document.getElementById('drop-zone');
         
         ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
@@ -494,12 +424,9 @@
         function handleDrop(e) {
             let dt = e.dataTransfer;
             let files = dt.files;
-            
-            // Mock file input event
             const event = { target: { files: files } };
             handleFileSelect(event);
         }
-
     </script>
 </body>
 </html>
